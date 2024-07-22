@@ -3,7 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DB_PATH="/data1/wyyzah-work/AcadeAgent/res/AcadeAgent/database.db"
+DB_PATH=r"C:\Users\qwrdxer\Desktop\AcadeAgent\res\AcadeAgent\database.db"
+print(DB_PATH)
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
 
