@@ -1,5 +1,5 @@
 import dotenv
-from core.database.chromadb import *
+from core.vectordb.chromadb import *
 from core.llm.Agent import *
 from core.agent.dataprocessAgent import *
 from langchain_openai import OpenAIEmbeddings

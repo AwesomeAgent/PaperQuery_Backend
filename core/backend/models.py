@@ -1,11 +1,18 @@
+'''
+@Description: 
+@Author: qwrdxer
+@Date: 2024-07-22 21:31:52
+@LastEditTime: 2024-07-23 15:56:37
+@LastEditors: qwrdxer
+'''
 # @File : models.py
 
 
 from .database import Base
 
-from sqlalchemy import  Column , Integer, String,Text
+from sqlalchemy import  Column , Integer, String,Text,TIMESTAMP, func
 
-
+from sqlalchemy.orm import column_property
 
 class User(Base):
     __tablename__ = 'users'
@@ -39,3 +46,5 @@ class Paper(Base):
     secondaryClassification = Column(String(255))  # 最多255个字符的变长字符串，用于存储次分类
     tags = Column(String(255))  # 最多255个字符的变长字符串，用于存储标签
     documentDescription = Column(Text)  # 文本类型，可以存储较长的描述信息
+    createTime = Column(TIMESTAMP, server_default=func.now())  # 增加的时间戳字段，默认当前时间
+    createTime_timestamp = column_property(func.extract('epoch', createTime).cast(Integer))

@@ -2,7 +2,7 @@
 @Description: 
 @Author: qwrdxer
 @Date: 2024-07-22 21:31:52
-@LastEditTime: 2024-07-23 14:35:53
+@LastEditTime: 2024-07-23 15:46:14
 @LastEditors: qwrdxer
 '''
 from pydantic import BaseModel
@@ -48,6 +48,7 @@ class PaperCreate(BaseModel):
     documentName: str
     documentPath: str
     documentStatus: int
+    createTime: datetime.datetime | None = None
 # 向量相关更新
 class PaperUpdate(PaperCreate):
     fvector: int

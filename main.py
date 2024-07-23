@@ -27,7 +27,7 @@ from core.backend.translate import Translator
 from core.llm.Agent import Agent_v1
 from core.agent.dataprocessAgent import *
 from core.agent.chatAgent import *
-from core.database.chromadb import *
+from core.vectordb.chromadb import *
 
 SECRET_KEY = "8590c54f9848254ebe161df5e2ec1823189201fdd524a167d45ab951d6eec026"
 ALGORITHM = "HS256"
@@ -156,6 +156,7 @@ async def describe_knowledge(token: str = Depends(oauth2_scheme),db: Session = D
 async def get_knowledges_all(token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     #获取当前用户
     user =await get_current_user(token,db)
+    print(user.lid)
     knowledges=get_Knowledge_by_lid(db, user.lid)
     filtered_documents = [{"knowledgeID": knowledge.knowledgeID,"knowledgeName":knowledge.knowledgeName, "knowledgeDescription":knowledge.knowledgeDescription,"documentNum":knowledge.documentNum,"vectorNum":knowledge.vectorNum} for knowledge in knowledges]
     
@@ -197,7 +198,7 @@ async def create_knowledges(knowledge: KnowledgeCreate, token: str = Depends(oau
 @app.get("/document/getDocumentList")
 async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     documents=get_document_by_knowledgeID(db, knowledgeID)
-    filtered_documents = [{"documentID": doc.id,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":['tage1','tage2' ,'tage3'],"vectorNum":doc.documentVector} for doc in documents]
+    filtered_documents = [{"documentID": doc.uid,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":['tage1','tage2' ,'tage3'],"vectorNum":doc.documentVector,"createTime":doc.createTime_timestamp} for doc in documents]
     return {
             "status_code": 200, 
             "msg":"Get document list successfully", 
@@ -218,7 +219,7 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
             "documentName": paper.documentName,
             "documentStatus": paper.documentStatus,
             "vectorNum": paper.documentVector,
-            "tags": paper.tags,
+            "documentTags": paper.tags,
         }
     }
 
@@ -226,14 +227,13 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
 @app.get("/document/getFile")
 def get_document(documentID: str,db: Session = Depends(get_db)):
     agent_path = Path.cwd()
-    print("AGENT_A",agent_path)
     paper =db.query(Paper).filter(Paper.uid == documentID).first()
     if not paper:
         return {
             "status_code": 404,
             "msg": "document not found",
         }
-    file_path ="C:\\Users\\qwrdxer\\Desktop\\AcadeAgent" +paper.documentPath
+    file_path =os.getenv("AcadeAgent_DIR")+paper.documentPath
     print("File_path",file_path) # 替换成你实际的 PDF 文件路径
     return FileResponse(file_path)
 
@@ -250,6 +250,7 @@ async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile]
         with open(file_path, "wb") as buffer:
             buffer.write(file.file.read())
         uid=cal_file_md5(file_path)
+        createtime=datetime.datetime.now(timezone.utc)
         ###检测是否已经存在
         paper =db.query(Paper).filter(Paper.uid == uid).first()
         if paper:
@@ -258,12 +259,21 @@ async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile]
             continue
         ###
 
-        paper = PaperCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid)
+        paper = PaperCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
         print(paper.documentPath)
         create_paper(db=db, paper=paper)
     return {
         "status_code": 200,
         "msg": "upload successfully",
+        "data": {
+            "documentID": uid,
+            "documentName": file.filename,
+            "documentStatus": 0,
+            "documentTags": [],
+            "knowledgeID": knowledgeID,
+            "vectorNum": 0,
+            "createTime": int(createtime.timestamp())
+        }
     }
 ## 翻译
 @app.get("/translate")
