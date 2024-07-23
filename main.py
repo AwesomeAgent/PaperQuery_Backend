@@ -12,7 +12,8 @@ from typing import Annotated, Union
 import uuid
 import dotenv
 from langchain_openai import OpenAIEmbeddings
-
+import os
+from pathlib import Path
 from core.backend.crud import *
 from core.backend.schema import *
 from core.backend.database import SessionLocal, engine
@@ -202,24 +203,31 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
 ## 根据documentID获取pdf文件
 @app.get("/document/getFile")
 def get_document(documentID: str,db: Session = Depends(get_db)):
+    agent_path = Path.cwd()
+    print("AGENT_A",agent_path)
     paper =db.query(Paper).filter(Paper.uid == documentID).first()
     if not paper:
         return {
             "status_code": 404,
             "msg": "document not found",
         }
-    file_path =paper.documentPath # 替换成你实际的 PDF 文件路径
-    print(file_path)
+    file_path ="C:\\Users\\qwrdxer\\Desktop\\AcadeAgent" +paper.documentPath
+    print("File_path",file_path) # 替换成你实际的 PDF 文件路径
     return FileResponse(file_path)
 
 ## 用户上传新的文档到指定的知识中
 @app.post("/document/upload")
 async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile] = File(...), token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
-    store_path = "/data1/wyyzah-work/AcadeAgent/res/pdf/"
+    agent_path = Path.cwd()
+    res_path=Path(agent_path,"res/pdf/")
+    pdf_storage_path = res_path
     user =await get_current_user(token,db)
     for file in documentFile:
-
-        uid=cal_file_md5(store_path+file.filename)
+        print("saving ",file.filename,"...")
+        file_path=os.path.join(pdf_storage_path,file.filename)
+        with open(file_path, "wb") as buffer:
+            buffer.write(file.file.read())
+        uid=cal_file_md5(file_path)
         ###检测是否已经存在
         paper =db.query(Paper).filter(Paper.uid == uid).first()
         if paper:
@@ -227,10 +235,8 @@ async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile]
             print("file ",file.filename," already exists")
             continue
         ###
-        print("saving ",file.filename,"...")
-        with open(store_path+file.filename, "wb") as buffer:
-            buffer.write(file.file.read())
-        paper = PaperCreate(documentName=file.filename,documentPath=store_path+file.filename,documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid)
+
+        paper = PaperCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid)
         print(paper.documentPath)
         create_paper(db=db, paper=paper)
     return {

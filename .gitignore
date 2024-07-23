@@ -1,6 +1,6 @@
 
 **/__pycache__/
 .env
-res/
+res/test/*
 core/tmp
 */*test*
