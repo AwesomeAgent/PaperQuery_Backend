@@ -1,6 +1,13 @@
+'''
+@Description: 
+@Author: qwrdxer
+@Date: 2024-07-22 21:31:52
+@LastEditTime: 2024-07-23 14:35:53
+@LastEditors: qwrdxer
+'''
 from pydantic import BaseModel
 import datetime
-
+from typing import List
 class Response(BaseModel):
     status_code: int
     msg: str
@@ -28,9 +35,11 @@ class KnowledgeGet(KnowledgeCreate):
     
 # 返回知识
 class KnowledgeQuery(Response):
-    data: list[KnowledgeGet] | None = None
+    data: List[KnowledgeGet] | None = None
 
-
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 # 文件paper创建
 class PaperCreate(BaseModel):
     uid : str 

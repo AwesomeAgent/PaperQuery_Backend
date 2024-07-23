@@ -1,3 +1,6 @@
+import dotenv
+dotenv.load_dotenv()
+
 from fastapi import Depends, FastAPI, HTTPException ,File, UploadFile,Form,Path
 from fastapi.responses import FileResponse
 from fastapi import FastAPI, Depends, HTTPException, status
@@ -5,15 +8,17 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import jwt
 from typing import Annotated, Union
 import uuid
-import dotenv
 from langchain_openai import OpenAIEmbeddings
 import os
 from pathlib import Path
+
+
 from core.backend.crud import *
 from core.backend.schema import *
 from core.backend.database import SessionLocal, engine
@@ -29,9 +34,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60000
 
 Base.metadata.create_all(bind=engine)
-dotenv.load_dotenv()
+
 llm=Agent_v1()
-chroma_db=AcadeChroma("/data1/wyyzah-work/AcadeAgent/res/layer1","/data1/wyyzah-work/AcadeAgent/res/layer2",OpenAIEmbeddings(),llm)
+chroma_db=AcadeChroma(os.getenv("CHROMA_LAYER1_DIR"),os.getenv("CHROMA_LAYER2_DIR"),OpenAIEmbeddings(),llm)
 chat_agent=ChatAgent(llm.get_llm('openai'),chroma_db)
 app = FastAPI()
 
@@ -104,19 +109,18 @@ def generate_future_timestamp(minutes: int):
      
     return int(future_timestamp.timestamp())
 
+
 @app.post("/login")
-def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
-    username = form_data.username
-    password = form_data.password
-    user = query_user(db, username)
-    if not user or user.password != password:
+def login_for_access_token(loginrequest: LoginRequest,db: Session = Depends(get_db)):
+    user = query_user(db, loginrequest.username)
+    if not user or user.password != loginrequest.password:
             return  JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content=jsonable_encoder({"status_code": status.HTTP_401_UNAUTHORIZED, "msg": "用户名或密码错误"}),
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"username": username,"lid":user.lid}, expires_delta=access_token_expires
+        data={"username": loginrequest.username,"lid":user.lid}, expires_delta=access_token_expires
     )
     return {
         "status_code": 200,
@@ -153,11 +157,14 @@ async def get_knowledges_all(token: str = Depends(oauth2_scheme),db: Session = D
     #获取当前用户
     user =await get_current_user(token,db)
     knowledges=get_Knowledge_by_lid(db, user.lid)
+    filtered_documents = [{"knowledgeID": knowledge.knowledgeID,"knowledgeName":knowledge.knowledgeName, "knowledgeDescription":knowledge.knowledgeDescription,"documentNum":knowledge.documentNum,"vectorNum":knowledge.vectorNum} for knowledge in knowledges]
+    
+    print(filtered_documents)
     #根据用户lid获取其拥有的全部知识
     return {"status_code": 200, 
             "msg":"Get knowledge list successfully", 
             "data":{
-                "knowledgeList": knowledges
+                "knowledgeList": filtered_documents
             }
             }
 
@@ -165,21 +172,36 @@ async def get_knowledges_all(token: str = Depends(oauth2_scheme),db: Session = D
 @app.post("/knowledges/createKnowledge")
 async def create_knowledges(knowledge: KnowledgeCreate, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     user =await get_current_user(token,db)
+    # 查询是否有重复的知识名
+    if get_knowledge_by_name(db, knowledge.knowledgeName):
+        return {
+            "status_code": 409,
+            "msg": "Knowledge name already exists",
+        }
     knowledge.lid = user.lid
     knowledge.knowledgeID = str(uuid.uuid1())
-    return create_knowledge(db, knowledge)
+    created_k= create_knowledge(db, knowledge)
 
+    return{
+        "status_code": 200,
+        "msg": "Create knowledge successfully",
+        "data": {
+            "knowledgeID": created_k.knowledgeID,
+            "knowledgeName": created_k.knowledgeName,
+            "knowledgeDescription": created_k.knowledgeDescription,
+            "documentNum": created_k.documentNum,
+            "vectorNum": created_k.vectorNum
+        }
+    }
 # 获取知识所拥有的所有文档
-@app.get("/knowledges/{knowledgeID}")
-async def get_documents_all(knowledgeID:str= Path(), token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
-    user =await get_current_user(token,db)
+@app.get("/document/getDocumentList")
+async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     documents=get_document_by_knowledgeID(db, knowledgeID)
-    filtered_documents = [{"documentID": doc.id,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":doc.tags,"vectorNum":doc.documentVector} for doc in documents]
-    return {"status_code": 200, 
+    filtered_documents = [{"documentID": doc.id,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":['tage1','tage2' ,'tage3'],"vectorNum":doc.documentVector} for doc in documents]
+    return {
+            "status_code": 200, 
             "msg":"Get document list successfully", 
-            "data":{
-                "documentList": filtered_documents
-            }
+            "data":filtered_documents
             }
 
 # 获取document的状态

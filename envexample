@@ -1,0 +1,25 @@
+<!--
+ * @Description: 
+ * @Author: qwrdxer
+ * @Date: 2024-07-23 10:21:38
+ * @LastEditTime: 2024-07-23 15:02:46
+ * @LastEditors: qwrdxer
+-->
+## API
+OPENAI_API_KEY="sk-WMwF3ZICC7ebCTTyC57c38Ff2b4246Ce8108A6DcF8B045C7"
+OPENAI_API_BASE="https://api.v3.cm/v1/"
+
+
+AcadeAgent_DIR="C:\Users\qwrdxer\Desktop\AcadeAgent"
+## 目录相关
+CHROMA_LAYER1_DIR="C:\Users\qwrdxer\Desktop\AcadeAgent\res\layer1"
+CHROMA_LAYER2_DIR="C:\Users\qwrdxer\Desktop\AcadeAgent\res\layerdwadawdaw2"
+PAPER_SAVE_DIR="C:\Users\qwrdxer\Desktop\AcadeAgent\res\pdf"
+
+#JWT
+SECRET_KEY = "sk-IBcCSHhyiEKZGHVv6bE4Fc5045Dd459aA01366057a834aDb"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60000
+
+#存储用户表、知识、论文的数据表位置
+DB_PATH="C:\\Users\\qwrdxer\\Desktop\\AcadeAgent\\res\\AcadeAgent\\database.db"
