@@ -1,5 +1,6 @@
 # 获取知识所拥有的所有文档
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,status
+from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer
 
 from core.backend.crud.crud import get_document_by_knowledgeID
@@ -8,8 +9,8 @@ import dotenv
 from core.backend.utils.utils import get_current_user, get_db
 dotenv.load_dotenv()
 
-from fastapi import Depends,File, UploadFile,Form,Path
-from fastapi.responses import FileResponse
+from fastapi import Depends, FastAPI, HTTPException ,File, UploadFile,Form,Path
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 
 from sqlalchemy.orm import Session
@@ -129,10 +130,13 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
         #代表用户已经上传过该文件 or 其他知识中存在该文件 todo: 复制文件状态
 
         ### 如果其他知识中已经存在这个Paper则拷贝其状态
-        return {
-                "status_code": 409,
-                "msg": "document already exists",
-        }
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=jsonable_encoder({                
+                "status_code": status.HTTP_409_CONFLICT,
+                "msg": "文件已存在",
+                }),
+        )
         
     # 重置文件内容读取位置，以便后续写入文件
     documentFile.file.seek(0)
