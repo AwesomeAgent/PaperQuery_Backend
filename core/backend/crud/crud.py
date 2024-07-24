@@ -7,8 +7,8 @@
 '''
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from .models import Paper,User,Knowledge
-from .schema import *
+from ..db.models import Paper,User,Knowledge
+from ..schema import *
 
 from typing import Tuple,List
 
