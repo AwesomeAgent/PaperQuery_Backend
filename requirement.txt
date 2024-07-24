@@ -6,6 +6,7 @@ asgiref==3.8.1
 asttokens==2.4.1
 async-timeout==4.0.3
 attrs==23.2.0
+awadb==0.3.13
 backoff==2.2.1
 bcrypt==4.1.3
 build==1.2.1
@@ -19,9 +20,9 @@ click==8.1.7
 colorama==0.4.6
 coloredlogs==15.0.1
 comm==0.2.2
-confection==0.1.3
 cryptography==42.0.8
 dataclasses-json==0.6.7
+DateTime==5.5
 debugpy==1.6.7
 decorator==5.1.1
 Deprecated==1.2.14
@@ -63,7 +64,6 @@ langchain==0.2.7
 langchain-chroma==0.1.2
 langchain-community==0.2.7
 langchain-core==0.2.12
-langchain-mongodb==0.1.6
 langchain-openai==0.1.14
 langchain-text-splitters==0.2.2
 langsmith==0.1.84
@@ -96,13 +96,11 @@ orjson==3.10.6
 overrides==7.7.0
 packaging==24.1
 parso==0.8.4
-pathy==0.10.2
 pexpect==4.9.0
 pickleshare==0.7.5
 pip==24.0
 platformdirs==4.2.2
 posthog==3.5.0
-preshed==3.0.8
 prompt_toolkit==3.0.47
 protobuf==4.25.3
 psutil==6.0.0
@@ -115,13 +113,13 @@ pydantic==2.8.2
 pydantic_core==2.20.1
 Pygments==2.18.0
 PyJWT==2.8.0
+pypdf==4.3.0
 PyPika==0.48.9
 pyproject_hooks==1.1.0
-pyreadline3==3.4.1
 python-dateutil==2.9.0
 python-dotenv==1.0.1
 python-multipart==0.0.9
-pywin32==306
+pytz==2024.1
 PyYAML==6.0.1
 pyzmq==25.1.2
 regex==2024.5.15
@@ -133,14 +131,12 @@ setuptools==69.5.1
 shellingham==1.5.4
 six==1.16.0
 sniffio==1.3.1
-spacy==3.6.1
 SQLAlchemy==2.0.31
 stack-data==0.6.2
 starlette==0.37.2
 sympy==1.13.1
 tenacity==8.5.0
-tencentcloud-sdk-python==3.0.1194
-thinc==8.1.12
+tencentcloud-sdk-python==3.0.1193
 tiktoken==0.7.0
 tokenizers==0.19.1
 tomli==2.0.1
@@ -152,6 +148,7 @@ typing_extensions==4.12.2
 typing-inspect==0.9.0
 urllib3==2.2.2
 uvicorn==0.30.3
+uvloop==0.19.0
 watchfiles==0.22.0
 wcwidth==0.2.13
 websocket-client==1.8.0
@@ -160,3 +157,4 @@ wheel==0.43.0
 wrapt==1.16.0
 yarl==1.9.4
 zipp==3.19.2
+zope.interface==6.4.post2

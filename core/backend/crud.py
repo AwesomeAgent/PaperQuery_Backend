@@ -46,6 +46,24 @@ def get_document_by_knowledgeID(db: Session, knowledgeID: str) :
 def get_paper_by_filename(db: Session, filename: str):
     return db.query(Paper).filter(Paper.filename == filename).first()
 
+def get_paper_status_equal_zero(db: Session):
+    return db.query(Paper).filter(Paper.documentStatus == 0).first()
+
+def update_paper_status(db: Session,paper: Paper):
+    db.query(Paper).filter(Paper.uid == paper.uid).update({Paper.documentStatus: paper.documentStatus})
+    db.commit()
+    return 1
+
+def update_paper_content(db: Session,result: dict):
+    db.query(Paper).filter(Paper.uid == result["uid"]).update({Paper.documentVector: result["documentVector"],
+                                                           Paper.primaryClassification: result["Primary Classification"],
+                                                           Paper.secondaryClassification: result["Secondary Classification"],
+                                                           Paper.tags: ','.join(result["Research Direction Tags"]),
+                                                           Paper.documentDescription: result["Abstract"],
+                                                           Paper.documentStatus: 2
+                                                           })
+    db.commit()
+    return 1
 # 增
 def create_paper(db: Session, paper: PaperCreate):
     db_paper = Paper(**paper.model_dump())
@@ -56,7 +74,7 @@ def create_paper(db: Session, paper: PaperCreate):
 
 # 改
 def update_paper(db: Session, paper: PaperUpdate):
-    db.query(Paper).filter(Paper.filename == paper.filename).update(paper.model_dump())
+    db.query(Paper).filter(Paper.filename == paper.filename).update(**paper.model_dump())
     db.commit()
     return db.query(Paper).filter(Paper.filename == paper.filename).first()
 def get_papers(db: Session, skip: int = 0, limit: int = 100):

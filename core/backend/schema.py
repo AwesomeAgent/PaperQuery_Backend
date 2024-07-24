@@ -51,7 +51,8 @@ class PaperCreate(BaseModel):
     createTime: datetime.datetime | None = None
 # 向量相关更新
 class PaperUpdate(PaperCreate):
-    fvector: int
+    fvector: int | None =None
+    
     primary_classification: str | None = None
     secondary_classification: str | None = None
     tags: str | None = None

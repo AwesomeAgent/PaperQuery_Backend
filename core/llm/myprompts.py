@@ -8,15 +8,6 @@ SUMMRISZ_TEMPLTE="""
             "Research Direction Tags": ["Vulnerability Detection", "Open-source Software", "Software Security", "Code Classification Techniques"]
         }
 """
-SUMMRISZ_TEMPLTE2="""
-
-        {
-            "Abstract": "论文的主要贡献、创新方法、实验结果、深入分析、重大进展等等",
-            "Primary Classification": "",
-            "Secondary Classification": "",
-            "Research Direction Tags": ["", "", "", ""]
-        }
-"""
 
 
 SUMMRISE_TEMPLET = PromptTemplate.from_template("""
@@ -28,12 +19,17 @@ SUMMRISE_TEMPLET = PromptTemplate.from_template("""
     
     >>>
     为了让你更理解你的任务，这是一个输出的模板,即一条JSON格式的输出,不要关注它具体的内容，你只需按照相同的格式对我给你的论文进行分析:
-    {SUMMRISZ_TEMPLTE}
+        {{
+            "Abstract": "论文的主要贡献、创新方法、实验结果、深入分析、重大进展等等",
+            "Primary Classification": "",
+            "Secondary Classification": "",
+            "Research Direction Tags": ["", "", "", ""]
+        }}
     <<<
     >>>
     如果你理解了你的任务,请开始你的工作,我给你的论文内容如下:
     {context}
-    <<<
+
 """)
 
 CHAT_WITH_MEMORY_PAPER_ASSISITANT = PromptTemplate.from_template("""

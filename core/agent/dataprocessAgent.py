@@ -24,7 +24,7 @@ class DataProcessAgent:
         for metadata in metadatas:
             metadata['documentID'] = file_hash  # 添加新的键值对，例如 'new_key': 'new_value'
             metadata['knowledge_name']=knowledgeID
-        
+        print(metadatas)
         self.chromadb.add_paper_to_layer1(texts, metadatas)
 
         
@@ -38,7 +38,13 @@ class DataProcessAgent:
             "knowledgeID":knowledgeID, #所在的知识库
             }
         self.chromadb.add_paper_to_layer2([json.dumps(json_paper, indent=2)], [metadataofpaper])
-
+        return {
+            "Primary Classification":json_paper["Primary Classification"],# 二级分类
+            "Secondary Classification":json_paper["Secondary Classification"], #一级分类
+            "Research Direction Tags":json_paper["Research Direction Tags"], #标签
+            "Abstract":json_paper["Abstract"], #摘要
+            "documentVector":len(texts) #向量数
+        }
         # todo 将摘要存储到数据库中
     def batch_add_newpaper(self, dir,knowledgeID):
         with Progress() as progress:
@@ -66,23 +72,24 @@ class DataProcessAgent:
         ## 检索出论文相关内容
         docs=fileRetriver.batch(["Retrieve detailed information about the document's key contributions, innovative methods, experimental results, thorough analysis, and significant advancements."])
 
-        prompt=myprompts.SUMMRISE_TEMPLET.format(SUMMRISZ_TEMPLTE=myprompts.SUMMRISZ_TEMPLTE2,context=docs[0])
-        print(prompt)
+        call_prompt=myprompts.SUMMRISE_TEMPLET.format(context=docs[0])
+        print(call_prompt)
        # print(len(prompt))
         max_retries = 5
         retries = 0
         while retries < max_retries:
             try:
-                response = self.llm.get_llm("openai").invoke(prompt)
-                if check_and_parse_json(response)!=None:
+                response = self.llm.get_llm("openai").invoke(call_prompt)
+                if check_and_parse_json(response.content)!=None:
                     break
+                print(response)
             except Exception as e:
                 retries += 1
                 if retries == max_retries:
                     print("Max retries reached. Exiting...")
                     return None
                 print(f"Retrying... (Attempt {retries})")
-        return check_and_parse_json(response)
+        return check_and_parse_json(response.content)
     
 
 
