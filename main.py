@@ -13,7 +13,7 @@ from langchain_openai import OpenAIEmbeddings
 import os
 
 from core.backend.crud.crud import *
-from core.backend.schema import *
+from core.backend.schema.schema import *
 from core.backend.db.database import SessionLocal, engine
 from core.backend.db.models import Base,User
 from core.backend.services.translate import Translator
@@ -32,11 +32,9 @@ Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global chroma_db, chat_agent, llm
-    llm=Agent_v1()
-    chroma_db=AcadeChroma(os.getenv("CHROMA_LAYER1_DIR"),os.getenv("CHROMA_LAYER2_DIR"),OpenAIEmbeddings(),llm)
-    chat_agent=ChatAgent(llm.get_llm('openai'),chroma_db)
-    print(chroma_db)
+    app.llm=Agent_v1()
+    app.chroma_db=AcadeChroma(os.getenv("CHROMA_LAYER1_DIR"),os.getenv("CHROMA_LAYER2_DIR"),OpenAIEmbeddings(),app.llm)
+    app.chat_agent=ChatAgent(app.llm.get_llm('openai'),app.chroma_db)
     yield
     # Clean up the ML models and release resources
     print("shoutdown!")

@@ -7,11 +7,10 @@
 '''
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from ..db.models import Paper,User,Knowledge
-from ..schema import *
+from typing import Tuple
 
-from typing import Tuple,List
-
+from core.backend.db.models import *
+from core.backend.schema.schema import *
 
 #--------------------------
 

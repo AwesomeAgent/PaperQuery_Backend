@@ -2,7 +2,6 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
 
-from core.backend.router.dependencies import get_chat_agent, get_chroma_db
 from core.backend.router.schema import Chat_Request
 from core.backend.crud.crud import get_document_by_knowledgeID
 import dotenv
@@ -29,7 +28,7 @@ from pathlib import Path
 import hashlib
 
 from core.backend.crud.crud import *
-from core.backend.schema import *
+from core.backend.schema.schema import *
 from core.backend.db.database import SessionLocal, engine
 from core.backend.db.models import Base,User
 from core.backend.services.translate import Translator
@@ -44,10 +43,10 @@ router = APIRouter()
 
 ## 聊天对话
 @router.get("/chat/generate")
-def chat_with_paper_generate(chat:Chat_Request , token: str = Depends(oauth2_scheme),chroma_db: Session = Depends(get_chroma_db),chat_agent: ChatAgent = Depends(get_chat_agent)):
-    docs=chroma_db.query_paper_with_score_layer1_by_filter("what is GCHRL)",{"documentID":"fd48386887fae0c08d10d7ef66ddeda8"})
+def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = Depends(oauth2_scheme)):
+    docs=request.app.chroma_db.query_paper_with_score_layer1_by_filter("what is GCHRL)",{"documentID":"fd48386887fae0c08d10d7ef66ddeda8"})
     print(docs)
-    output,context=chat_agent.chat_with_memory("","","什么是GCHRL",docs)
+    output,context=request.app.chat_agent.chat_with_memory("","","什么是GCHRL",docs)
     return {
         "status_code": 200,
         "msg": "chat successfully",

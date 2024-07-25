@@ -1,11 +1,12 @@
 import dotenv
 from colorama import Fore, Back, Style
+from core.backend.crud.crud import get_paper_status_equal_zero, update_paper_content, update_paper_status
+from core.backend.db.database import SessionLocal
 from core.vectordb.chromadb import *
 from core.llm.Agent import *
 from core.agent.dataprocessAgent import *
-from core.backend.models import Base,User,Knowledge,Paper
-from core.backend.crud import get_paper_status_equal_zero,update_paper_status,update_paper_content
-from core.backend.database import SessionLocal
+
+
 from langchain_openai import OpenAIEmbeddings
 import time
 db = SessionLocal()
@@ -15,7 +16,7 @@ def test_add():
     llm=Agent_v1()
     chroma_db=AcadeChroma("/data1/wyyzah-work/AcadeAgent/res/layer1","/data1/wyyzah-work/AcadeAgent/res/layer2",OpenAIEmbeddings(),llm)
     dp=DataProcessAgent(llm,chroma_db)
-    directory = r'/data1/wyyzah-work/AcadeAgent/res/pdf'
+    directory = os.getenv("PAPER_SAVE_DIR")
 
     dp.batch_add_newpaper(directory,"kid1")
             
@@ -27,6 +28,7 @@ if __name__ == '__main__':
     db = SessionLocal()
     while True:
         paper=get_paper_status_equal_zero(db)
+        time.sleep(1)
         if paper:
             print(Fore.RED,f"开始处理{paper.documentName}",Style.RESET_ALL)
             print(type(paper)) 

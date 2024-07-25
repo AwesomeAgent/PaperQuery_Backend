@@ -20,7 +20,7 @@ from pathlib import Path
 import hashlib
 
 from core.backend.crud.crud import *
-from core.backend.schema import *
+from core.backend.schema.schema import *
 from core.agent.dataprocessAgent import *
 from core.agent.chatAgent import *
 from core.vectordb.chromadb import *
@@ -30,7 +30,8 @@ router = APIRouter()
 @router.get("/document/getDocumentList")
 async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     documents=get_document_by_knowledgeID(db, knowledgeID)
-    filtered_documents = [{"documentID": doc.uid,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":['tage1','tage2' ,'tage3'],"vectorNum":doc.documentVector,"createTime":doc.createTime_timestamp} for doc in documents]
+
+    filtered_documents = [{"documentID": doc.uid,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":[doc.primaryClassification,doc.secondaryClassification]+(doc.tags.split(", ") if doc.tags else []),"vectorNum":doc.documentVector,"createTime":doc.createTime_timestamp} for doc in documents]
     return {
             "status_code": 200, 
             "msg":"Get document list successfully", 
