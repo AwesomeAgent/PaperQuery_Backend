@@ -8,7 +8,6 @@ from core.llm import myprompts
 from core.utils.util import cal_file_md5, check_and_parse_json
 
 
-
 class DataProcessAgent:
     def __init__(self,llm,chromadb):
         self.llm=llm
@@ -81,7 +80,7 @@ class DataProcessAgent:
         retries = 0
         while retries < max_retries:
             try:
-                response = self.llm.get_llm("openai").invoke(call_prompt)
+                response = self.llm.chat_with_llm(call_prompt)
                 if check_and_parse_json(response.content)!=None:
                     break
                 print(response)

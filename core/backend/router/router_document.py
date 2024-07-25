@@ -1,8 +1,6 @@
 import hashlib
 import os
 from datetime import datetime, timezone
-from pathlib import Path
-
 from fastapi import APIRouter, Depends, File, Form, Path, UploadFile, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse
@@ -51,7 +49,6 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
 ## 根据documentID获取pdf文件
 @router.get("/document/getFile")
 def get_document(documentID: str,db: Session = Depends(get_db)):
-    Path.cwd()
     Document =db.query(Document).filter(Document.uid == documentID).first()
     if not Document:
         return {
@@ -83,10 +80,10 @@ async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile]
             print("file ",file.filename," already exists")
             continue
         ###
-
+        print("开始文件上传")
         Document = DocumentCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
         print(Document.documentPath)
-        create_Document(db=db, Document=Document)
+        create_document(db=db, Document=Document)
     return {
         "status_code": 200,
         "msg": "upload successfully",
@@ -107,9 +104,7 @@ async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile]
 ## 单文件上传
 @router.post("/document/upload")
 async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
-    agent_path = Path.cwd()
-    res_path=Path(agent_path,"res/pdf/")
-    pdf_storage_path = res_path
+    pdf_storage_path =os.getenv("PAPER_SAVE_DIR")
     user =await get_current_user(token,db)
 
         # 计算文件的MD5哈希值
@@ -118,8 +113,8 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
     hasher.update(file_content)
     file_md5 = hasher.hexdigest()
     print("FILE_MD5",file_md5)
-    Document =db.query(Document).filter(Document.uid ==file_md5).first()
-    if Document:
+    document =get_document_by_uid(db, file_md5)
+    if document:
         #代表用户已经上传过该文件 or 其他知识中存在该文件 todo: 复制文件状态
 
         ### 如果其他知识中已经存在这个Document则拷贝其状态
@@ -140,9 +135,9 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
     uid=cal_file_md5(file_path)
     print("UID",uid)
     createtime=datetime.datetime.now(timezone.utc)
-    Document = DocumentCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/pdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
+    document = DocumentCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/pdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
 
-    create_Document(db=db, Document=Document)
+    create_document(db=db, document=document)
     return {
         "status_code": 200,
         "msg": "upload successfully",

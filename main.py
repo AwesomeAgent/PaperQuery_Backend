@@ -25,12 +25,9 @@ from core.backend.router import (
     router_user,
 )
 from core.backend.schema.schema import *
-from core.llm.Agent import Agent_v1
+from core.llm.LLM import LLM
 from core.vectordb.chromadb import *
 
-SECRET_KEY = "8590c54f9848254ebe161df5e2ec1823189201fdd524a167d45ab951d6eec026"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60000
 
 Base.metadata.create_all(bind=engine)
 
@@ -38,7 +35,7 @@ Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.llm=Agent_v1()
+    app.llm=LLM()
     app.chroma_db=AcadeChroma(os.getenv("CHROMA_LAYER1_DIR"),os.getenv("CHROMA_LAYER2_DIR"),OpenAIEmbeddings(),app.llm)
     app.chat_agent=ChatAgent(app.llm.get_llm('openai'),app.chroma_db)
     yield
