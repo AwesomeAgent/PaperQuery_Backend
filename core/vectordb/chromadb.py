@@ -1,9 +1,5 @@
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_chroma import Chroma
-from langchain_community.callbacks.manager import get_openai_callback
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.prompts import PromptTemplate
+
 
 # 提供对向量数据库的操作
 class AcadeChroma:

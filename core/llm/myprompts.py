@@ -1,4 +1,5 @@
 from langchain_core.prompts import PromptTemplate
+
 SUMMRISZ_TEMPLTE="""
 
         {

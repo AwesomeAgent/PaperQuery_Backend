@@ -1,8 +1,7 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain.chains.question_answering import load_qa_chain
 import tiktoken
+from langchain_openai import ChatOpenAI
+
+
 class Agent_v1:
     def __init__(self):
         self.llms = {}

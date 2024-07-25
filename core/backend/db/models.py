@@ -8,11 +8,11 @@
 # @File : models.py
 
 
+from sqlalchemy import TIMESTAMP, Column, Integer, String, Text, func
+from sqlalchemy.orm import column_property
+
 from .database import Base
 
-from sqlalchemy import  Column , Integer, String,Text,TIMESTAMP, func
-
-from sqlalchemy.orm import column_property
 
 class User(Base):
     __tablename__ = 'users'

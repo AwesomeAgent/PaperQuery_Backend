@@ -5,9 +5,12 @@
 @LastEditTime: 2024-07-23 15:46:14
 @LastEditors: qwrdxer
 '''
-from pydantic import BaseModel
 import datetime
 from typing import List
+
+from pydantic import BaseModel
+
+
 class Response(BaseModel):
     status_code: int
     msg: str

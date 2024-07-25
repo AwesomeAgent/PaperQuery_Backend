@@ -1,10 +1,12 @@
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_core.prompts import PromptTemplate
 import json
-from ..llm import myprompts
-from ..utils.util import cal_file_md5,check_and_parse_json
-from rich.progress import Progress
 import os
+
+from langchain_community.document_loaders import PyPDFLoader
+from rich.progress import Progress
+
+from core.llm import myprompts
+from core.utils.util import cal_file_md5, check_and_parse_json
+
 
 
 class DataProcessAgent:
@@ -83,7 +85,7 @@ class DataProcessAgent:
                 if check_and_parse_json(response.content)!=None:
                     break
                 print(response)
-            except Exception as e:
+            except Exception:
                 retries += 1
                 if retries == max_retries:
                     print("Max retries reached. Exiting...")

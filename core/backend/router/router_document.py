@@ -1,29 +1,21 @@
-# 获取知识所拥有的所有文档
-from fastapi import APIRouter, Depends,status
+import hashlib
+import os
+from datetime import datetime, timezone
+from pathlib import Path
+
+from fastapi import APIRouter, Depends, File, Form, Path, UploadFile, status
 from fastapi.encoders import jsonable_encoder
-from fastapi.security import OAuth2PasswordBearer
-
-import dotenv
-
-from core.backend.crud.crud_document import *
-from core.backend.utils.utils import get_current_user, get_db
-dotenv.load_dotenv()
-
-from fastapi import Depends, FastAPI, HTTPException ,File, UploadFile,Form,Path
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta, timezone
-import os
-from pathlib import Path
-import hashlib
 
-
-from core.backend.schema.schema import *
-from core.agent.dataprocessAgent import *
 from core.agent.chatAgent import *
+from core.agent.dataprocessAgent import *
+from core.backend.crud.crud_document import *
+from core.backend.schema.schema import *
+from core.backend.utils.utils import get_current_user, get_db
 from core.vectordb.chromadb import *
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 router = APIRouter()
 
@@ -41,7 +33,7 @@ async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme)
 # 获取document的状态
 @router.get("/document/Info")
 async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
-    user =await get_current_user(token,db)
+    await get_current_user(token,db)
     print(documentID,knowledgeID)
     Document =db.query(Document).filter(Document.uid == documentID,Document.knowledgeID==knowledgeID).first()
     return {
@@ -59,7 +51,7 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
 ## 根据documentID获取pdf文件
 @router.get("/document/getFile")
 def get_document(documentID: str,db: Session = Depends(get_db)):
-    agent_path = Path.cwd()
+    Path.cwd()
     Document =db.query(Document).filter(Document.uid == documentID).first()
     if not Document:
         return {

@@ -1,9 +1,12 @@
 
 from tencentcloud.common import credential
+from tencentcloud.common.exception.tencent_cloud_sdk_exception import (
+    TencentCloudSDKException,
+)
 from tencentcloud.common.profile.client_profile import ClientProfile
 from tencentcloud.common.profile.http_profile import HttpProfile
-from tencentcloud.common.exception.tencent_cloud_sdk_exception import TencentCloudSDKException 
-from tencentcloud.tmt.v20180321 import tmt_client, models 
+from tencentcloud.tmt.v20180321 import models, tmt_client
+
 
 class Translator:
     def __init__(self, from_lang, to_lang,secret_id,secret_key):

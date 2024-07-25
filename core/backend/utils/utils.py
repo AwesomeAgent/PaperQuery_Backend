@@ -2,15 +2,12 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
-import jwt
-
-
 from core.backend.crud.crud_user import query_user
-from core.backend.db.database import SessionLocal
 from core.backend.router.dependencies import *
 
 SECRET_KEY = "8590c54f9848254ebe161df5e2ec1823189201fdd524a167d45ab951d6eec026"

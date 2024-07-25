@@ -1,30 +1,10 @@
 # 获取知识所拥有的所有文档
 from fastapi import APIRouter, Depends
+from fastapi.requests import Request
 from fastapi.security import OAuth2PasswordBearer
 
 from core.backend.router.schema import Chat_Request
 
-
-from fastapi import Depends, FastAPI, HTTPException ,File, UploadFile,Form,Path
-from fastapi.responses import FileResponse
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-
-from fastapi.requests import Request
-
-from langchain_openai import OpenAIEmbeddings
-import os
-from pathlib import Path
-import hashlib
-
-from core.backend.schema.schema import *
-from core.backend.db.database import SessionLocal, engine
-from core.backend.db.models import Base,User
-from core.backend.services.translate import Translator
-from core.llm.Agent import Agent_v1
-from core.agent.dataprocessAgent import *
-from core.agent.chatAgent import *
-from core.vectordb.chromadb import *
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 router = APIRouter()
 

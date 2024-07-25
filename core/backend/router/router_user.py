@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException,status,Depends
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from fastapi.security import OAuth2PasswordBearer
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 
 from core.backend.schema.schema import LoginRequest
 from core.backend.utils.utils import *

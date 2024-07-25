@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session
-from sqlalchemy import func
 from typing import Tuple
+
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 from core.backend.db.models import *
 from core.backend.schema.schema import *

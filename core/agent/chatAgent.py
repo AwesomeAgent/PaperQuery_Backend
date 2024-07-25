@@ -1,5 +1,8 @@
-from core.llm.myprompts import *
 import json
+
+from core.llm.myprompts import *
+
+
 # 用于聊天对话的Agent
 class ChatAgent:
     def __init__(self,llm,chromadb):
@@ -15,7 +18,7 @@ class ChatAgent:
             try:
                 response = self.llm.invoke(prompt)
                 break
-            except Exception as e:
+            except Exception:
                 retries += 1
                 if retries == max_retries:
                     print("Max retries reached. Exiting...")

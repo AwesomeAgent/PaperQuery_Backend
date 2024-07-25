@@ -1,10 +1,9 @@
 
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from typing import Tuple
 
 from core.backend.db.models import *
 from core.backend.schema.schema import *
+
 
 #----------------------用户相关
 def create_user(db: Session, user: UserCreate):

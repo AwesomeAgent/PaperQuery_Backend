@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
-from typing import Tuple
 
 from core.backend.db.models import *
 from core.backend.schema.schema import *
+
 
 # 获取用户指定知识下所有文档信息
 def get_document_by_knowledgeID(db: Session, knowledgeID: str) :

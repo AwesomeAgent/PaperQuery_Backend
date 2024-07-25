@@ -1,5 +1,7 @@
 import hashlib
 import json
+
+
 def cal_file_md5(file_path):
     with open(file_path, 'rb') as f:
         md5 = hashlib.md5()

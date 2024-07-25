@@ -1,30 +1,33 @@
-import dotenv
 from contextlib import asynccontextmanager
+
+import dotenv
+
 dotenv.load_dotenv()
 
-from fastapi import Depends, FastAPI
-from fastapi import FastAPI, Depends
-from fastapi.security import OAuth2PasswordBearer
-
-from fastapi.middleware.cors import CORSMiddleware
-
-
-from langchain_openai import OpenAIEmbeddings
 import os
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from langchain_openai import OpenAIEmbeddings
+
+from core.agent.chatAgent import *
+from core.agent.dataprocessAgent import *
 from core.backend.crud.crud_document import *
 from core.backend.crud.crud_knowledge import *
 from core.backend.crud.crud_user import *
-
+from core.backend.db.database import engine
+from core.backend.db.models import Base
+from core.backend.router import (
+    router_document,
+    router_knowledge,
+    router_llm,
+    router_translate,
+    router_user,
+)
 from core.backend.schema.schema import *
-from core.backend.db.database import SessionLocal, engine
-from core.backend.db.models import Base,User
-from core.backend.services.translate import Translator
 from core.llm.Agent import Agent_v1
-from core.agent.dataprocessAgent import *
-from core.agent.chatAgent import *
 from core.vectordb.chromadb import *
-from core.backend.router import router_document,router_knowledge,router_llm,router_user,router_translate
+
 SECRET_KEY = "8590c54f9848254ebe161df5e2ec1823189201fdd524a167d45ab951d6eec026"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60000

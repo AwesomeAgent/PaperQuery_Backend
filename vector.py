@@ -1,14 +1,19 @@
-import dotenv
-from colorama import Fore, Back, Style
-from core.backend.crud.crud import get_paper_status_equal_zero, update_paper_content, update_paper_status
-from core.backend.db.database import SessionLocal
-from core.vectordb.chromadb import *
-from core.llm.Agent import *
-from core.agent.dataprocessAgent import *
-
-
-from langchain_openai import OpenAIEmbeddings
 import time
+
+import dotenv
+from colorama import Fore, Style
+from langchain_openai import OpenAIEmbeddings
+
+from core.agent.dataprocessAgent import *
+from core.backend.crud.crud import (
+    get_paper_status_equal_zero,
+    update_paper_content,
+    update_paper_status,
+)
+from core.backend.db.database import SessionLocal
+from core.llm.Agent import *
+from core.vectordb.chromadb import *
+
 db = SessionLocal()
 
 def test_add():

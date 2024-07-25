@@ -1,13 +1,19 @@
 
-from fastapi import APIRouter,Depends
-from fastapi.security import OAuth2PasswordBearer
-
 import uuid
 
-from core.backend.crud.crud_knowledge import create_knowledge, get_knowledge_by_lid, get_knowledge_by_name, get_knowledges_statistics
+from fastapi import APIRouter, Depends
+from fastapi.security import OAuth2PasswordBearer
+
+from core.backend.crud.crud_knowledge import (
+    create_knowledge,
+    get_knowledge_by_lid,
+    get_knowledge_by_name,
+    get_knowledges_statistics,
+)
 from core.backend.router.dependencies import get_db
 from core.backend.schema.schema import KnowledgeCreate
 from core.backend.utils.utils import *
+
 router = APIRouter()
 ##-----------------------------------------------------------
 # 获取用户的知识库描述
