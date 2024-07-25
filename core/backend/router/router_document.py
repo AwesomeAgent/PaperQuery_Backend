@@ -10,8 +10,9 @@ from sqlalchemy.orm import Session
 from core.agent.chatAgent import *
 from core.agent.dataprocessAgent import *
 from core.backend.crud.crud_document import *
+from core.backend.router.req_res_schema import DeleteDocument
 from core.backend.schema.schema import *
-from core.backend.utils.utils import get_current_user, get_db
+from core.backend.utils.utils import get_current_user, get_db, get_filtered_documents
 from core.vectordb.chromadb import *
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -20,8 +21,8 @@ router = APIRouter()
 @router.get("/document/getDocumentList")
 async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     documents=get_document_by_knowledgeID(db, knowledgeID)
-
-    filtered_documents = [{"documentID": doc.uid,"documentName":doc.documentName, "documentStatus": doc.documentStatus,"documentTags":[doc.primaryClassification,doc.secondaryClassification]+(doc.tags.split(", ") if doc.tags else []),"vectorNum":doc.documentVector,"createTime":doc.createTime_timestamp} for doc in documents]
+    
+    filtered_documents = get_filtered_documents(documents)
     return {
             "status_code": 200, 
             "msg":"Get document list successfully", 
@@ -33,23 +34,23 @@ async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme)
 async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     await get_current_user(token,db)
     print(documentID,knowledgeID)
-    Document =db.query(Document).filter(Document.uid == documentID,Document.knowledgeID==knowledgeID).first()
+    document =db.query(Document).filter(Document.uid == documentID,Document.knowledgeID==knowledgeID).first()
     return {
         "status_code": 200,
         "msg": "Get document info successfully",
         "data": {
-            "documentID": Document.uid,
-            "documentName": Document.documentName,
-            "documentStatus": Document.documentStatus,
-            "vectorNum": Document.documentVector,
-            "documentTags": Document.tags,
+            "documentID": document.uid,
+            "documentName": document.documentName,
+            "documentStatus": document.documentStatus,
+            "vectorNum": document.documentVector,
+            "documentTags": document.tags if document.tags else [],
         }
     }
 
 ## 根据documentID获取pdf文件
 @router.get("/document/getFile")
-def get_document(documentID: str,db: Session = Depends(get_db)):
-    Document =db.query(Document).filter(Document.uid == documentID).first()
+def get_document(documentID: str,knowledgeID:str,db: Session = Depends(get_db)):
+    Document =get_document_by_uid_kid(db, documentID,knowledgeID)
     if not Document:
         return {
             "status_code": 404,
@@ -58,46 +59,6 @@ def get_document(documentID: str,db: Session = Depends(get_db)):
     file_path =os.getenv("AcadeAgent_DIR")+Document.documentPath
     print("File_path",file_path) # 替换成你实际的 PDF 文件路径
     return FileResponse(file_path)
-
-## 多文件上传
-@router.post("/document/uploads")
-async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile] = File(...), token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
-    agent_path = Path.cwd()
-    res_path=Path(agent_path,"res/pdf/")
-    pdf_storage_path = res_path
-    user =await get_current_user(token,db)
-    for file in documentFile:
-        print("saving ",file.filename,"...")
-        file_path=os.path.join(pdf_storage_path,file.filename)
-        with open(file_path, "wb") as buffer:
-            buffer.write(file.file.read())
-        uid=cal_file_md5(file_path)
-        createtime=datetime.datetime.now(timezone.utc)
-        ###检测是否已经存在
-        Document =db.query(Document).filter(Document.uid == uid).first()
-        if Document:
-            #代表用户已经上传过该文件 or 其他知识中存在该文件 todo: 复制文件状态
-            print("file ",file.filename," already exists")
-            continue
-        ###
-        print("开始文件上传")
-        Document = DocumentCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
-        print(Document.documentPath)
-        create_document(db=db, Document=Document)
-    return {
-        "status_code": 200,
-        "msg": "upload successfully",
-        "data": {
-            "documentID": uid,
-            "documentName": file.filename,
-            "documentStatus": 0,
-            "documentTags": [],
-            "knowledgeID": knowledgeID,
-            "vectorNum": 0,
-            "createTime": int(createtime.timestamp())
-        }
-    }
-
 
 
 
@@ -150,4 +111,25 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
             "vectorNum": 0,
             "createTime": int(createtime.timestamp())
         }
+    }
+
+## 文件删除
+@router.post("/document/delete")
+async def delete_document(deleteDocument:DeleteDocument,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
+
+    document =get_document_by_uid_kid(db, deleteDocument.documentID,deleteDocument.knowledgeID)
+    if not document:
+        return {
+            "status_code": 404,
+            "msg": "文件不存在",
+        }
+    db.delete(document)
+    db.commit()
+    doc =get_document_by_uid(db, deleteDocument.documentID)#检查其他知识中是否还有该文档,如果有就不需要删除向量和源文件
+    if not doc: #如果没有则进行删除
+        file_path =os.getenv("AcadeAgent_DIR")+document.documentPath
+        os.remove(file_path)
+    return {
+        "status_code": 200,
+        "msg": "文件删除成功",
     }

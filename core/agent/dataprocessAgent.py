@@ -6,6 +6,7 @@ from rich.progress import Progress
 
 from core.llm import myprompts
 from core.utils.util import cal_file_md5, check_and_parse_json
+import time
 
 
 class DataProcessAgent:
@@ -65,16 +66,22 @@ class DataProcessAgent:
 
     def summarize_paper(self,filename):
         ## 获得retriver
-        fileRetriver=self.chromadb.chroma_db_layer1.as_retriever(
-            search_type="similarity",
-            search_kwargs={"k": 3,'filter':{'source':filename}},
-            
-            )
-        ## 检索出论文相关内容
-        docs=fileRetriver.batch(["Retrieve detailed information about the document's key contributions, innovative methods, experimental results, thorough analysis, and significant advancements."])
+        start_time = time.time()
 
-        call_prompt=myprompts.SUMMRISE_TEMPLET.format(context=docs[0])
+        fileRetriver = self.chromadb.chroma_db_layer1.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": 3, 'filter': {'source': filename}},
+        )
+
+        ## 检索出论文相关内容
+        docs = fileRetriver.batch(["Retrieve detailed information about the document's key contributions, innovative methods, experimental results, thorough analysis, and significant advancements."])
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"Execution time: {execution_time} seconds")
+        call_prompt = myprompts.SUMMRISE_TEMPLET.format(context=docs[0])
         print(call_prompt)
+
+
        # print(len(prompt))
         max_retries = 5
         retries = 0

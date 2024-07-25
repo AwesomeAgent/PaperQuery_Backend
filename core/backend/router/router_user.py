@@ -11,9 +11,7 @@ from core.backend.utils.utils import *
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
-SECRET_KEY = "8590c54f9848254ebe161df5e2ec1823189201fdd524a167d45ab951d6eec026"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60000
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -21,7 +19,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Ses
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
         username: str = payload.get("username") 
     except Exception:
         raise credentials_exception
@@ -39,14 +37,14 @@ def login_for_access_token(loginrequest: LoginRequest,db: Session = Depends(get_
             status_code=status.HTTP_401_UNAUTHORIZED,
             content=jsonable_encoder({"status_code": status.HTTP_401_UNAUTHORIZED, "msg": "用户名或密码错误"}),
         )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")))
     access_token = create_access_token(
         data={"username": loginrequest.username,"lid":user.lid}, expires_delta=access_token_expires
     )
     return {
         "status_code": 200,
         "msg": "登录成功",
-        "data":{"access_token": access_token, "token_type": "Bearer","expire":generate_future_timestamp(ACCESS_TOKEN_EXPIRE_MINUTES)}
+        "data":{"access_token": access_token, "token_type": "Bearer","expire":generate_future_timestamp(int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES")))}
     }
 
 # 测试登录状态

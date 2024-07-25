@@ -13,7 +13,8 @@ def get_document_by_uid(db: Session, uid: str):
 
 def get_document_by_filename(db: Session, filename: str):
     return db.query(Document).filter(Document.filename == filename).first()
-
+def get_document_by_uid_kid(db: Session, uid: str,knowledgeID:str):
+    return db.query(Document).filter(Document.uid == uid,Document.knowledgeID==knowledgeID).first()
 def get_document_status_equal_zero(db: Session):
     return db.query(Document).filter(Document.documentStatus == 0).first()
 

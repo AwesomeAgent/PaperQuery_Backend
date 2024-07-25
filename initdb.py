@@ -66,20 +66,6 @@ CREATE TABLE IF NOT EXISTS documents (
 )
 ''')
 
-# 插入数据
-papers_data = [
-    ("uid1", "kid1", "lid1", "example.pdf", "/path/to/example.pdf", 1, 100, "Computer Science", "Artificial Intelligence", "machine learning, deep learning", "This is an example paper on machine learning.", datetime.now(timezone.utc)),
-    ("uid2", "kid2", "lid2", "another_example.pdf", "/path/to/another_example.pdf", 2, 200, "Physics", "Quantum Mechanics", "quantum, research", "This is another example paper on quantum mechanics.", datetime.now(timezone.utc))
-]
-
-for paper in papers_data:
-    cursor.execute('''
-    INSERT INTO documents (uid, knowledgeID, lid, documentName, documentPath, documentStatus, documentVector, primaryClassification, secondaryClassification, tags, documentDescription, createTime)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', paper)
-
-
-
 # 查询数据并打印
 cursor.execute('SELECT * FROM documents')
 rows = cursor.fetchall()
