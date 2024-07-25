@@ -32,8 +32,9 @@ class Knowledge(Base):
     documentNum = Column(Integer)  # 整数类型，用于存储文件相关信息
     vectorNum = Column(Integer)  # 整数类型，用于存储向量信息
 
-class Paper(Base):
-    __tablename__ = 'papers'
+# 定义 Document 表
+class Document(Base):
+    __tablename__ = 'documents'
     id = Column(Integer, primary_key=True, autoincrement=True)
     uid = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空
     knowledgeID = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空

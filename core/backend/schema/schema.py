@@ -40,8 +40,8 @@ class KnowledgeQuery(Response):
 class LoginRequest(BaseModel):
     username: str
     password: str
-# 文件paper创建
-class PaperCreate(BaseModel):
+# 文件Document创建
+class DocumentCreate(BaseModel):
     uid : str 
     knowledgeID : str 
     lid: str 
@@ -50,7 +50,7 @@ class PaperCreate(BaseModel):
     documentStatus: int
     createTime: datetime.datetime | None = None
 # 向量相关更新
-class PaperUpdate(PaperCreate):
+class DocumentUpdate(DocumentCreate):
     fvector: int | None =None
     
     primary_classification: str | None = None
@@ -59,7 +59,7 @@ class PaperUpdate(PaperCreate):
     fdesc: str | None = None
 
 #文件查询
-class PaperQuery(PaperCreate):
+class DocumentQuery(DocumentCreate):
     fvector: int
     primary_classification: str | None = None
     secondary_classification: str | None = None

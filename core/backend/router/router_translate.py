@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from core.backend.router.schema import Chat_Request
-from core.backend.crud.crud import get_document_by_knowledgeID
 import dotenv
 
 from core.backend.utils.utils import get_current_user, get_db
@@ -16,8 +15,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 
 
-from core.backend.crud.crud import *
-from core.backend.schema import *
+from core.backend.schema.schema import *
 
 from core.backend.services.translate import Translator
 

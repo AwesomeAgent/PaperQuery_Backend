@@ -3,9 +3,9 @@ from fastapi import APIRouter, Depends,status
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer
 
-from core.backend.crud.crud import get_document_by_knowledgeID
 import dotenv
 
+from core.backend.crud.crud_document import *
 from core.backend.utils.utils import get_current_user, get_db
 dotenv.load_dotenv()
 
@@ -19,7 +19,7 @@ import os
 from pathlib import Path
 import hashlib
 
-from core.backend.crud.crud import *
+
 from core.backend.schema.schema import *
 from core.agent.dataprocessAgent import *
 from core.agent.chatAgent import *
@@ -43,16 +43,16 @@ async def get_documents_all(knowledgeID:str, token: str = Depends(oauth2_scheme)
 async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     user =await get_current_user(token,db)
     print(documentID,knowledgeID)
-    paper =db.query(Paper).filter(Paper.uid == documentID,Paper.knowledgeID==knowledgeID).first()
+    Document =db.query(Document).filter(Document.uid == documentID,Document.knowledgeID==knowledgeID).first()
     return {
         "status_code": 200,
         "msg": "Get document info successfully",
         "data": {
-            "documentID": paper.uid,
-            "documentName": paper.documentName,
-            "documentStatus": paper.documentStatus,
-            "vectorNum": paper.documentVector,
-            "documentTags": paper.tags,
+            "documentID": Document.uid,
+            "documentName": Document.documentName,
+            "documentStatus": Document.documentStatus,
+            "vectorNum": Document.documentVector,
+            "documentTags": Document.tags,
         }
     }
 
@@ -60,13 +60,13 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
 @router.get("/document/getFile")
 def get_document(documentID: str,db: Session = Depends(get_db)):
     agent_path = Path.cwd()
-    paper =db.query(Paper).filter(Paper.uid == documentID).first()
-    if not paper:
+    Document =db.query(Document).filter(Document.uid == documentID).first()
+    if not Document:
         return {
             "status_code": 404,
             "msg": "document not found",
         }
-    file_path =os.getenv("AcadeAgent_DIR")+paper.documentPath
+    file_path =os.getenv("AcadeAgent_DIR")+Document.documentPath
     print("File_path",file_path) # 替换成你实际的 PDF 文件路径
     return FileResponse(file_path)
 
@@ -85,16 +85,16 @@ async def  upload_document(knowledgeID:str=Form(),documentFile: List[UploadFile]
         uid=cal_file_md5(file_path)
         createtime=datetime.datetime.now(timezone.utc)
         ###检测是否已经存在
-        paper =db.query(Paper).filter(Paper.uid == uid).first()
-        if paper:
+        Document =db.query(Document).filter(Document.uid == uid).first()
+        if Document:
             #代表用户已经上传过该文件 or 其他知识中存在该文件 todo: 复制文件状态
             print("file ",file.filename," already exists")
             continue
         ###
 
-        paper = PaperCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
-        print(paper.documentPath)
-        create_paper(db=db, paper=paper)
+        Document = DocumentCreate(documentName=file.filename,documentPath=os.path.join("/res/pdf/",file.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
+        print(Document.documentPath)
+        create_Document(db=db, Document=Document)
     return {
         "status_code": 200,
         "msg": "upload successfully",
@@ -126,11 +126,11 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
     hasher.update(file_content)
     file_md5 = hasher.hexdigest()
     print("FILE_MD5",file_md5)
-    paper =db.query(Paper).filter(Paper.uid ==file_md5).first()
-    if paper:
+    Document =db.query(Document).filter(Document.uid ==file_md5).first()
+    if Document:
         #代表用户已经上传过该文件 or 其他知识中存在该文件 todo: 复制文件状态
 
-        ### 如果其他知识中已经存在这个Paper则拷贝其状态
+        ### 如果其他知识中已经存在这个Document则拷贝其状态
         return JSONResponse(
             status_code=status.HTTP_409_CONFLICT,
             content=jsonable_encoder({                
@@ -148,9 +148,9 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
     uid=cal_file_md5(file_path)
     print("UID",uid)
     createtime=datetime.datetime.now(timezone.utc)
-    paper = PaperCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/pdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
+    Document = DocumentCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/pdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
 
-    create_paper(db=db, paper=paper)
+    create_Document(db=db, Document=Document)
     return {
         "status_code": 200,
         "msg": "upload successfully",

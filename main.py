@@ -12,7 +12,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain_openai import OpenAIEmbeddings
 import os
 
-from core.backend.crud.crud import *
+from core.backend.crud.crud_document import *
+from core.backend.crud.crud_knowledge import *
+from core.backend.crud.crud_user import *
+
 from core.backend.schema.schema import *
 from core.backend.db.database import SessionLocal, engine
 from core.backend.db.models import Base,User

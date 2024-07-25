@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 
 import jwt
 
-from core.backend.crud.crud import query_user
+
+from core.backend.crud.crud_user import query_user
 from core.backend.db.database import SessionLocal
 from core.backend.router.dependencies import *
 

@@ -1,13 +1,12 @@
 
-from fastapi import APIRouter, HTTPException,status,Depends
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
+from fastapi import APIRouter,Depends
 from fastapi.security import OAuth2PasswordBearer
-from datetime import datetime, timedelta, timezone
+
 import uuid
 
-from core.backend.crud.crud import *
+from core.backend.crud.crud_knowledge import create_knowledge, get_knowledge_by_lid, get_knowledge_by_name, get_knowledges_statistics
 from core.backend.router.dependencies import get_db
+from core.backend.schema.schema import KnowledgeCreate
 from core.backend.utils.utils import *
 router = APIRouter()
 ##-----------------------------------------------------------
@@ -17,7 +16,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 @router.get("/knowledges/getLibraryInfo")
 async def describe_knowledge(token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     user =await get_current_user(token,db)
-    Knowledgecount,filecount,vectorcount=get_Knowledges_statistics(db, user.lid)
+    Knowledgecount,filecount,vectorcount=get_knowledges_statistics(db, user.lid)
     return {
         "status_code": 200,
         "msg": "Get knowledge statistics successfully",
@@ -35,7 +34,7 @@ async def get_knowledges_all(token: str = Depends(oauth2_scheme),db: Session = D
     #获取当前用户
     user =await get_current_user(token,db)
     print(user.lid)
-    knowledges=get_Knowledge_by_lid(db, user.lid)
+    knowledges=get_knowledge_by_lid(db, user.lid)
     filtered_documents = [{"knowledgeID": knowledge.knowledgeID,"knowledgeName":knowledge.knowledgeName, "knowledgeDescription":knowledge.knowledgeDescription,"documentNum":knowledge.documentNum,"vectorNum":knowledge.vectorNum} for knowledge in knowledges]
     
     print(filtered_documents)

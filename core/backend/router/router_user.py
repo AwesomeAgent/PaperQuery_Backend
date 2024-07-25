@@ -4,7 +4,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta, timezone
 
-from core.backend.crud.crud import *
+
+from core.backend.schema.schema import LoginRequest
 from core.backend.utils.utils import *
 
 router = APIRouter()
