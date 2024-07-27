@@ -6,6 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 DB_PATH=os.getenv("DB_PATH")
+print(DB_PATH,"ADWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW")
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 engine = create_engine(

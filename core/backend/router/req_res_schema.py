@@ -8,6 +8,7 @@ class LoginException(HTTPException):
         self.msg = msg
 
 class Ref(BaseModel):
+    knowledgeID: str
     documentID: str
     selectedText: str
     page: int
@@ -21,3 +22,12 @@ class Chat_Request(BaseModel):
 class DeleteDocument(BaseModel):
     documentID: str
     knowledgeID: str
+
+
+class TranslateRequest(BaseModel):
+    text: str
+
+class Summarise_Request(BaseModel):
+    input: str
+    answer: str
+    context: str
