@@ -29,7 +29,7 @@ class AcadeChroma:
     def query_paper_with_score_layer1_by_filter(self,query_str,filter):
         fileRetriver=self.chroma_db_layer1.as_retriever(
                 search_type="similarity",
-                search_kwargs={"k": 3,'filter':filter},
+                search_kwargs={"k": 5,'filter':filter},
                 )
         docs=fileRetriver.batch([query_str])
         return str(docs)
@@ -38,9 +38,16 @@ class AcadeChroma:
         pass
 
     
-    # 删
-    def delete_paper_from_layer1(self,keyword):
-        pass 
+    # 删除指定 kid下的文档
+    def delete_paper_from_layer1(self,kid,documentid):
+        filterDocs=self.chroma_db_layer1.get(where={"$and":[{"knowledge_name":kid},{"documentID":documentid}]},include=["metadatas"])
+        if len(filterDocs["ids"])>0:
+            self.chroma_db_layer1.delete(filterDocs['ids'])
+
+    def delete_paper_from_layer2(self,kid,documentid):
+        filterDocs=self.chroma_db_layer2.get(where={"$and":[{"knowledgeID":kid},{"documentID":documentid}]},include=["metadatas"])
+        if len(filterDocs["ids"])>0:
+            self.chroma_db_layer2.delete(filterDocs['ids'])
     # 改
     def alter_paper_from_layer1(self,ids,text):
         pass 
@@ -48,3 +55,5 @@ class AcadeChroma:
     # 状态查询
     def get_layer_vector_count(self):
         return self.current_layer1_count,self.current_layer2_count
+
+

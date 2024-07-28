@@ -10,6 +10,7 @@ from core.backend.crud.crud_document import (
     update_document_content,
     update_document_status,
 )
+from core.backend.crud.crud_knowledge import update_knowledge_content
 from core.backend.db.database import SessionLocal
 from core.llm.LLM import *
 from core.vectordb.chromadb import *
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     db = SessionLocal()
     while True:
         document=get_document_status_equal_zero(db)
-        time.sleep(1)
+        time.sleep(3)
         if document:
             print(Fore.RED,f"开始处理{document.documentName}",Style.RESET_ALL)
             print(type(document)) 
@@ -47,5 +48,7 @@ if __name__ == '__main__':
             print(Fore.YELLOW,f"更新向量,",Style.RESET_ALL)
             print(Fore.YELLOW,f"更新描述标签信息,",Style.RESET_ALL)
             update_document_content(db,result)
-            time.sleep(10)
+            print(Fore.YELLOW,f"更新知识库信息,",Style.RESET_ALL)
+            ## 更新知识库状态, 总向量数+N,总文件数＋1 
+            update_knowledge_content(db,result["documentVector"],1,document.knowledgeID)
             print(Fore.GREEN,f"处理完成更新状态为 2,",Style.RESET_ALL)

@@ -32,11 +32,10 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
 @router.post("/chat/generate_flow")
 def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = Depends(oauth2_scheme)):
     translator = Translator(from_lang="en", to_lang="zh",secret_id="AKIDdA0xAOMfptoks0ERZk3WxIiDoP0cFqU5",secret_key="jcPB0mo6NofWI5EEHUycWgsz34xpeWTU")
-    translatedinput =translator.translate(re.sub(r'[\n\r\t]', '', chat.input))
-
+    translatedinput =translator.translate(re.sub(r'[\n\r\t]', '', chat.question))
     docs=request.app.chroma_db.query_paper_with_score_layer1_by_filter(translatedinput,{"documentID":chat.ref.documentID})
-    ret=request.app.chat_agent.chat_with_memory_ret(translatedinput,chat.ref.selectedText,input,docs)
-
+    ret=request.app.chat_agent.chat_with_memory_ret(chat.context,chat.ref.selectedText,translatedinput,docs)
+    #chat_with_memory_ret(self, conversation_memory,ref,question,paper_content):
     def predict():
         text = ""
         for _token in ret:
@@ -53,7 +52,7 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
 ## 对话总结
 @router.post("/chat/summarise")
 def chat_summarise(chat:Summarise_Request,request:Request,token: str = Depends(oauth2_scheme)):
-    output=request.app.chat_agent.chat_summarise(chat.context,chat.input,chat.answer)
+    output=request.app.chat_agent.chat_summarise(chat.context,chat.question,chat.answer)
     return {
         "status_code": 200,
         "msg": "记忆更新成功",
@@ -62,3 +61,33 @@ def chat_summarise(chat:Summarise_Request,request:Request,token: str = Depends(o
         }
     
     }
+## 对话总结
+@router.post("/chat/chat_raw")
+def chat_summarise(chat:Summarise_Request,request:Request,token: str = Depends(oauth2_scheme)):
+    output=request.app.chat_agent.chat_summarise(chat.context,chat.question,chat.answer)
+    return {
+        "status_code": 200,
+        "msg": "记忆更新成功",
+        "data": {
+            "context": output
+        }
+    
+    }
+## 流式对话
+@router.post("/chat/generate_flow_test")
+def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = Depends(oauth2_scheme)):
+
+    ret=request.app.chat_agent.chat_simple(chat.question)
+    #chat_with_memory_ret(self, conversation_memory,ref,question,paper_content):
+    def predict():
+        text = ""
+        for _token in ret:
+            token = _token.content
+            js_data = {"code": "200", "msg": "ok", "data": token}
+            yield f"data: {json.dumps(js_data,ensure_ascii=False)}\n\n"
+            text += token
+        print(text)
+
+    generate = predict()
+    return StreamingResponse(generate, media_type="text/event-stream")
+

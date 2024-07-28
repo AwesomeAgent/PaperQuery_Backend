@@ -14,7 +14,7 @@ class Ref(BaseModel):
     page: int
 
 class Chat_Request(BaseModel):
-    input: str
+    question: str
     ref: Ref
     context: str
 
@@ -28,6 +28,6 @@ class TranslateRequest(BaseModel):
     text: str
 
 class Summarise_Request(BaseModel):
-    input: str
+    question: str
     answer: str
     context: str

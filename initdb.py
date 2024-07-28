@@ -25,7 +25,6 @@ knowledgeID3=uuid.uuid1()
 # 插入数据
 users_data = [
     ("admin", "123456", "admin"),
-    ("user1", "123456", "1234"),
 ]
 
 for user in users_data:
@@ -94,17 +93,17 @@ CREATE TABLE IF NOT EXISTS knowledges (
 )
 ''')
 
-# 插入数据
-knowledges_data = [
-    (f"kid{i+1}", "admin", f"Knowledge {i+1}", f"Description of Knowledge {i+1}", i+1, (i+1) * 100, datetime.now(timezone.utc))
-    for i in range(3)
-]
+# # 插入数据
+# knowledges_data = [
+#     (f"kid{i+1}", "admin", f"Knowledge {i+1}", f"Description of Knowledge {i+1}", i+1, (i+1) * 100, datetime.now(timezone.utc))
+#     for i in range(3)
+# ]
 
-for knowledge in knowledges_data:
-    cursor.execute('''
-    INSERT INTO knowledges (knowledgeID, lid, knowledgeName, knowledgeDescription, documentNum, vectorNum, timestamp)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    ''', knowledge)
+# for knowledge in knowledges_data:
+#     cursor.execute('''
+#     INSERT INTO knowledges (knowledgeID, lid, knowledgeName, knowledgeDescription, documentNum, vectorNum, timestamp)
+#     VALUES (?, ?, ?, ?, ?, ?, ?)
+#     ''', knowledge)
 
 # 提交事务
 conn.commit()

@@ -30,3 +30,9 @@ def create_knowledge(db: Session, knowledge: KnowledgeCreate):
 ## 根据知识名获取知识
 def get_knowledge_by_name(db: Session, knowledgeName: str):
     return db.query(Knowledge).filter(Knowledge.knowledgeName == knowledgeName).first()
+
+##更新知识库状态, 总文件数＋1 ,总向量数+N
+def update_knowledge_content(db: Session, VectorNum:int,DocumentNum:int,knowledgeID:str):
+    db.query(Knowledge).filter(Knowledge.knowledgeID == knowledgeID).update({Knowledge.vectorNum: Knowledge.vectorNum + VectorNum,Knowledge.documentNum: Knowledge.documentNum + DocumentNum})
+    db.commit()
+    return db.query(Knowledge).filter(Knowledge.knowledgeID == knowledgeID).first()

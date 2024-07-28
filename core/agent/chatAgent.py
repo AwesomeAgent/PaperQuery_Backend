@@ -33,10 +33,15 @@ class ChatAgent:
         return jsondata["answer"],jsondata["conversation_memory"]
     def chat_with_memory_ret(self, conversation_memory,ref,question,paper_content):
         prompt=CHAT_WITH_MEMORY_PAPER_ASSISITANT_ANSWER_PART.format(conversation_memory=conversation_memory,ref=ref,question=question,paper_content=paper_content)
+        print(prompt)
         return self.streamllm.stream(prompt)
-    def chat_summarise(self,context,input,answer):
-        prompt=CHAT_WITH_MEMORY_PAPER_ASSISITANT_ANSWER_SUMMARY.format(context=context,input=input,answer=answer)
+    def chat_summarise(self,context,question,answer):
+        prompt=CHAT_WITH_MEMORY_PAPER_ASSISITANT_ANSWER_SUMMARY.format(context=context,question=question,answer=answer)
         response = self.llm.invoke(prompt)
         return response.content
+
+    def chat_simple(self,prompt):
+
+        return self.streamllm.stream(prompt)
     def get_llm(self):
         return self.llm

@@ -1,6 +1,9 @@
 import hashlib
 import json
-
+def split_text_into_chunks(text, chunk_size=500):
+    words = text.split()
+    for i in range(0, len(words), chunk_size):
+        yield ' '.join(words[i:i + chunk_size])
 
 def cal_file_md5(file_path):
     with open(file_path, 'rb') as f:

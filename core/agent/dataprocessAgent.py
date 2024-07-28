@@ -1,33 +1,44 @@
 import json
 import os
-
+import fitz
 from langchain_community.document_loaders import PyPDFLoader
 from rich.progress import Progress
 
 from core.llm import myprompts
-from core.utils.util import cal_file_md5, check_and_parse_json
+from core.utils.util import cal_file_md5, check_and_parse_json, split_text_into_chunks
 import time
+
+from core.vectordb.chromadb import AcadeChroma
 
 
 class DataProcessAgent:
     def __init__(self,llm,chromadb):
         self.llm=llm
-        self.chromadb=chromadb
+        self.chromadb:AcadeChroma=chromadb
         self.sqlitconnect=None
 
     # 将新的论文增加到layer1和layer2
     def add_newpaper(self,filepath,knowledgeID):
-        loader  = PyPDFLoader(filepath)
-        file_hash=cal_file_md5(filepath)
-        pages = loader.load_and_split()
-        # 将完整的论文加载到layer1
-        texts = [doc.page_content for doc in pages]
-        metadatas = [doc.metadata for doc in pages]
-        for metadata in metadatas:
-            metadata['documentID'] = file_hash  # 添加新的键值对，例如 'new_key': 'new_value'
-            metadata['knowledge_name']=knowledgeID
-        print(metadatas)
-        self.chromadb.add_paper_to_layer1(texts, metadatas)
+        file_hash = cal_file_md5(filepath)
+        doc = fitz.open(filepath)
+        chunks = []
+        chunksMetadataList = []
+
+        for page_num in range(len(doc)):
+            page = doc.load_page(page_num)
+            text = page.get_text("text")
+            if text:
+                for chunk in split_text_into_chunks(text):
+                    chunks.append(chunk)
+                    metadata = {
+                        'source': filepath,
+                        'documentID': file_hash,
+                        'knowledge_name': knowledgeID,
+                        'page_number': page_num + 1
+                    }
+                    chunksMetadataList.append(metadata)
+        print(chunksMetadataList[0])
+        self.chromadb.add_paper_to_layer1(chunks, chunksMetadataList)
 
         
         # 调用大模型的RAG进行论文摘要,并将摘要存储到layer2
@@ -45,7 +56,7 @@ class DataProcessAgent:
             "Secondary Classification":json_paper["Secondary Classification"], #一级分类
             "Research Direction Tags":json_paper["Research Direction Tags"], #标签
             "Abstract":json_paper["Abstract"], #摘要
-            "documentVector":len(texts) #向量数
+            "documentVector":len(chunksMetadataList) #向量数
         }
         # todo 将摘要存储到数据库中
     def batch_add_newpaper(self, dir,knowledgeID):

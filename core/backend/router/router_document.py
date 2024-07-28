@@ -1,7 +1,7 @@
 import hashlib
 import os
 from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, File, Form, Path, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Path, Request, UploadFile, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -10,9 +10,10 @@ from sqlalchemy.orm import Session
 from core.agent.chatAgent import *
 from core.agent.dataprocessAgent import *
 from core.backend.crud.crud_document import *
+from core.backend.crud.crud_knowledge import update_knowledge_content
 from core.backend.router.req_res_schema import DeleteDocument
 from core.backend.schema.schema import *
-from core.backend.utils.utils import get_current_user, get_db, get_filtered_documents
+from core.backend.utils.utils import get_current_user, get_db, get_document_tags, get_filtered_documents
 from core.vectordb.chromadb import *
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -43,7 +44,8 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
             "documentName": document.documentName,
             "documentStatus": document.documentStatus,
             "vectorNum": document.documentVector,
-            "documentTags": document.tags if document.tags else [],
+            "documentTags": get_document_tags(document) if (document.primaryClassification or document.secondaryClassification or document.tags) else [],
+            "createTime":document.createTime_timestamp
         }
     }
 
@@ -115,7 +117,7 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
 
 ## 文件删除
 @router.post("/document/delete")
-async def delete_document(deleteDocument:DeleteDocument,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
+async def delete_document(deleteDocument:DeleteDocument,request:Request,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
 
     document =get_document_by_uid_kid(db, deleteDocument.documentID,deleteDocument.knowledgeID)
     if not document:
@@ -123,8 +125,15 @@ async def delete_document(deleteDocument:DeleteDocument,token: str = Depends(oau
             "status_code": 404,
             "msg": "文件不存在",
         }
+    #在document表中删除
     db.delete(document)
     db.commit()
+    #在向量数据库中删除
+    request.app.chroma_db.delete_paper_from_layer1(deleteDocument.knowledgeID,deleteDocument.documentID)
+    request.app.chroma_db.delete_paper_from_layer2(deleteDocument.knowledgeID,deleteDocument.documentID)
+    #更新知识库状态 file -1  vector -N
+    update_knowledge_content(db,-document.documentVector,-1,document.knowledgeID)
+    #删除文件
     doc =get_document_by_uid(db, deleteDocument.documentID)#检查其他知识中是否还有该文档,如果有就不需要删除向量和源文件
     if not doc: #如果没有则进行删除
         file_path =os.getenv("AcadeAgent_DIR")+document.documentPath
