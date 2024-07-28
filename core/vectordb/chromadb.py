@@ -15,7 +15,7 @@ class AcadeChroma:
     
     def add_paper_to_layer2(self,texts,metadatas):
         self.chroma_db_layer2.add_texts(texts, metadatas)
-        self.current_layer2_count=self.chroma_db_layer1._collection.count()
+        self.current_layer2_count=self.chroma_db_layer2._collection.count()
 
     # 查 
     # 全局查询 , 根据问题返回检索出来的文档

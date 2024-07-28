@@ -20,7 +20,7 @@ db = SessionLocal()
 def test_add():
     dotenv.load_dotenv()
     llms=LLM()
-    chroma_db=AcadeChroma("/data1/wyyzah-work/AcadeAgent/res/layer1","/data1/wyyzah-work/AcadeAgent/res/layer2",OpenAIEmbeddings(),llms.get_llm('openai'))
+    chroma_db=AcadeChroma("/data1/wyyzah-work/PaperQuery_Backend/res/layer2","/data1/wyyzah-work/PaperQuery_Backend/res/layer2",OpenAIEmbeddings(),llms.get_llm('openai'))
     dp=DataProcessAgent(llms.get_llm('openai'),chroma_db)
     directory = os.getenv("document_SAVE_DIR")
 
