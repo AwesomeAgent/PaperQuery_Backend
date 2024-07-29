@@ -5,8 +5,8 @@ from langchain_openai import ChatOpenAI
 class LLM:
     def __init__(self):
         self.llms = {}
-        self.llms['openai'] = ChatOpenAI(model="gpt-3.5-turbo",openai_api_key="sk-WMwF3ZICC7ebCTTyC57c38Ff2b4246Ce8108A6DcF8B045C7",openai_api_base="https://api.gpt.ge/v1/",default_headers = {"x-foo": "true"})
-        self.tokenizer=tiktoken.encoding_for_model('gpt-3.5-turbo')
+        self.llms['openai'] = ChatOpenAI(model="gpt-4o-mini",openai_api_key="sk-WMwF3ZICC7ebCTTyC57c38Ff2b4246Ce8108A6DcF8B045C7",openai_api_base="https://api.gpt.ge/v1/",default_headers = {"x-foo": "true"})
+        self.tokenizer=tiktoken.encoding_for_model('gpt-4o')
         self.chatllm = self.llms['openai']
     def get_llm(self, name):
         return self.llms[name]

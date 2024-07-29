@@ -29,7 +29,7 @@ class AcadeChroma:
     def query_paper_with_score_layer1_by_filter(self,query_str,filter):
         fileRetriver=self.chroma_db_layer1.as_retriever(
                 search_type="similarity",
-                search_kwargs={"k": 5,'filter':filter},
+                search_kwargs={"k": 12,'filter':filter},
                 )
         docs=fileRetriver.batch([query_str])
         return str(docs)

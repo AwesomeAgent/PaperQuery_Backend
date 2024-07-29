@@ -48,7 +48,23 @@ async def get_document_info(documentID: str,knowledgeID:str,token: str = Depends
             "createTime":document.createTime_timestamp
         }
     }
-
+# 获取文档的总结
+@router.get("/document/summarize")
+async def get_document_summarize(documentID: str,knowledgeID:str,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
+    await get_current_user(token,db)
+    document =get_document_by_uid_kid(db, documentID,knowledgeID)
+    if not document:
+        return {
+            "status_code": 404,
+            "msg": "未找到指定文件",
+        }
+    return {
+        "status_code": 200,
+        "msg": "成功获取文档总结",
+        "data": {
+            "summarize": document.documentDescription,
+        }
+    }
 ## 根据documentID获取pdf文件
 @router.get("/document/getFile")
 def get_document(documentID: str,knowledgeID:str,db: Session = Depends(get_db)):

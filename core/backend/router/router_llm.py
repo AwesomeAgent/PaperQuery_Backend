@@ -31,11 +31,16 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
 ## 流式对话
 @router.post("/chat/generate_flow")
 def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = Depends(oauth2_scheme)):
-    translator = Translator(from_lang="en", to_lang="zh",secret_id="AKIDdA0xAOMfptoks0ERZk3WxIiDoP0cFqU5",secret_key="jcPB0mo6NofWI5EEHUycWgsz34xpeWTU")
+    translator = Translator(from_lang="zh", to_lang="en",secret_id="AKIDdA0xAOMfptoks0ERZk3WxIiDoP0cFqU5",secret_key="jcPB0mo6NofWI5EEHUycWgsz34xpeWTU")
     translatedinput =translator.translate(re.sub(r'[\n\r\t]', '', chat.question))
+    #将用户的问题作为RAG进行检索
     docs=request.app.chroma_db.query_paper_with_score_layer1_by_filter(translatedinput,{"documentID":chat.ref.documentID})
     ret=request.app.chat_agent.chat_with_memory_ret(chat.context,chat.ref.selectedText,translatedinput,docs)
     #chat_with_memory_ret(self, conversation_memory,ref,question,paper_content):
+    ##      /                                                   |                          \
+    # 3 联邦学习中文RAG与论文毫无相关、但是是专业学术问题       什么Python              这篇文章的实验效果如何?(着重强调实验部分)  论文相关,但RAG检索到的内容并不足以支撑回答,则GPT生成检索问题,再次RAG 
+    #  ret=request.app.chat_agent.chat_with_memory_ret(chat.context,chat.ref.selectedText,translatedinput,docs)
+
     def predict():
         text = ""
         for _token in ret:
@@ -50,7 +55,7 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
 
 
 ## 对话总结
-@router.post("/chat/summarise")
+@router.post("/chat/summarize")
 def chat_summarise(chat:Summarise_Request,request:Request,token: str = Depends(oauth2_scheme)):
     output=request.app.chat_agent.chat_summarise(chat.context,chat.question,chat.answer)
     return {
