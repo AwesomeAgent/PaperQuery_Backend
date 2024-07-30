@@ -8,6 +8,7 @@ from core.backend.crud.crud_knowledge import (
     create_knowledge,
     get_knowledge_by_lid,
     get_knowledge_by_name,
+    get_knowledge_by_name_uid,
     get_knowledges_statistics,
 )
 from core.backend.router.dependencies import get_db
@@ -57,7 +58,7 @@ async def get_knowledges_all(token: str = Depends(oauth2_scheme),db: Session = D
 async def create_knowledges(knowledge: KnowledgeCreate, token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     user =await get_current_user(token,db)
     # 查询是否有重复的知识名
-    if get_knowledge_by_name(db, knowledge.knowledgeName):
+    if get_knowledge_by_name_uid(db, knowledge.knowledgeName,knowledge.lid):
         return {
             "status_code": 409,
             "msg": "Knowledge name already exists",

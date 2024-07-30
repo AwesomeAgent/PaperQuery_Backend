@@ -24,7 +24,8 @@ knowledgeID2=uuid.uuid1()
 knowledgeID3=uuid.uuid1()
 # 插入数据
 users_data = [
-    ("admin", "123456", "admin"),
+    # ("admin", "123456", "admin"),
+    ("user", "123456","user"),
 ]
 
 for user in users_data:
@@ -36,83 +37,83 @@ for user in users_data:
 
 # 查询数据并打印
 cursor.execute('SELECT * FROM "users"')
-rows = cursor.fetchall()
-for row in rows:
-    print(row)
+# rows = cursor.fetchall()
+# for row in rows:
+#     print(row)
 
 
-# 删除表（如果存在）
-cursor.execute('''
-DROP TABLE IF EXISTS documents
-''')
+# # 删除表（如果存在）
+# cursor.execute('''
+# DROP TABLE IF EXISTS documents
+# ''')
 
-# 创建表，增加时间戳列
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS documents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uid VARCHAR(255) NOT NULL,
-    knowledgeID VARCHAR(255) NOT NULL,
-    lid VARCHAR(255) NOT NULL,
-    documentName VARCHAR(255) NOT NULL,
-    documentPath VARCHAR(255) NOT NULL,
-    documentStatus INTEGER,
-    documentVector INTEGER,
-    primaryClassification VARCHAR(255),
-    secondaryClassification VARCHAR(255),
-    tags VARCHAR(255),
-    documentDescription TEXT,
-    createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-''')
+# # 创建表，增加时间戳列
+# cursor.execute('''
+# CREATE TABLE IF NOT EXISTS documents (
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     uid VARCHAR(255) NOT NULL,
+#     knowledgeID VARCHAR(255) NOT NULL,
+#     lid VARCHAR(255) NOT NULL,
+#     documentName VARCHAR(255) NOT NULL,
+#     documentPath VARCHAR(255) NOT NULL,
+#     documentStatus INTEGER,
+#     documentVector INTEGER,
+#     primaryClassification VARCHAR(255),
+#     secondaryClassification VARCHAR(255),
+#     tags VARCHAR(255),
+#     documentDescription TEXT,
+#     createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+# )
+# ''')
 
-# 查询数据并打印
-cursor.execute('SELECT * FROM documents')
-rows = cursor.fetchall()
-for row in rows:
-    print(row)
-
-
+# # 查询数据并打印
+# cursor.execute('SELECT * FROM documents')
+# rows = cursor.fetchall()
+# for row in rows:
+#     print(row)
 
 
-# 删除表（如果存在）
-cursor.execute('''
-DROP TABLE IF EXISTS knowledges
-''')
 
-# 创建表，并增加时间戳列
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS knowledges (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    knowledgeID VARCHAR(255) NOT NULL,
-    lid VARCHAR(255) NOT NULL,
-    knowledgeName VARCHAR(255) NOT NULL,
-    knowledgeDescription TEXT,
-    documentNum INTEGER,
-    vectorNum INTEGER,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
-''')
 
-# # 插入数据
-# knowledges_data = [
-#     (f"kid{i+1}", "admin", f"Knowledge {i+1}", f"Description of Knowledge {i+1}", i+1, (i+1) * 100, datetime.now(timezone.utc))
-#     for i in range(3)
-# ]
+# # 删除表（如果存在）
+# cursor.execute('''
+# DROP TABLE IF EXISTS knowledges
+# ''')
 
-# for knowledge in knowledges_data:
-#     cursor.execute('''
-#     INSERT INTO knowledges (knowledgeID, lid, knowledgeName, knowledgeDescription, documentNum, vectorNum, timestamp)
-#     VALUES (?, ?, ?, ?, ?, ?, ?)
-#     ''', knowledge)
+# # 创建表，并增加时间戳列
+# cursor.execute('''
+# CREATE TABLE IF NOT EXISTS knowledges (
+#     id INTEGER PRIMARY KEY AUTOINCREMENT,
+#     knowledgeID VARCHAR(255) NOT NULL,
+#     lid VARCHAR(255) NOT NULL,
+#     knowledgeName VARCHAR(255) NOT NULL,
+#     knowledgeDescription TEXT,
+#     documentNum INTEGER,
+#     vectorNum INTEGER,
+#     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+# )
+# ''')
 
-# 提交事务
+# # # 插入数据
+# # knowledges_data = [
+# #     (f"kid{i+1}", "admin", f"Knowledge {i+1}", f"Description of Knowledge {i+1}", i+1, (i+1) * 100, datetime.now(timezone.utc))
+# #     for i in range(3)
+# # ]
+
+# # for knowledge in knowledges_data:
+# #     cursor.execute('''
+# #     INSERT INTO knowledges (knowledgeID, lid, knowledgeName, knowledgeDescription, documentNum, vectorNum, timestamp)
+# #     VALUES (?, ?, ?, ?, ?, ?, ?)
+# #     ''', knowledge)
+
+# # 提交事务
+# conn.commit()
+
+# # 查询数据并打印
+# cursor.execute('SELECT * FROM knowledges')
+# rows = cursor.fetchall()
+# for row in rows:
+#     print(row)
 conn.commit()
-
-# 查询数据并打印
-cursor.execute('SELECT * FROM knowledges')
-rows = cursor.fetchall()
-for row in rows:
-    print(row)
-
 # 关闭连接
 conn.close()
