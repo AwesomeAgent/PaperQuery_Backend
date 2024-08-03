@@ -52,6 +52,16 @@ class DocumentCreate(BaseModel):
     documentPath: str
     documentStatus: int
     createTime: datetime.datetime | None = None
+# 临时document创建
+class TMPDocumentCreate(BaseModel):
+    uid : str 
+    knowledgeID : str 
+    lid: str 
+    documentName: str
+    documentPath: str
+    documentStatus: int
+    createTime: datetime.datetime | None = None
+
 # 向量相关更新
 class DocumentUpdate(DocumentCreate):
     fvector: int | None =None

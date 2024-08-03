@@ -31,3 +31,8 @@ class Summarise_Request(BaseModel):
     question: str
     answer: str
     context: str
+#临时聊天的请求,包含 问题、上下文、临时文件的所有uid
+class TMP_Chat_Request(BaseModel):
+    question: str
+    context: str
+    uid:list

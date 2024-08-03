@@ -35,7 +35,6 @@ def update_document_content(db: Session,result: dict):
     return 1
 # 增
 def create_document(db: Session, document: DocumentCreate):
-    print(document.model_dump(),"DWADWDWA")
     db_document = Document(**document.model_dump())
     db.add(db_document)
     db.commit()

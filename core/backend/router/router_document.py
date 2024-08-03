@@ -11,9 +11,10 @@ from core.agent.chatAgent import *
 from core.agent.dataprocessAgent import *
 from core.backend.crud.crud_document import *
 from core.backend.crud.crud_knowledge import update_knowledge_content
+from core.backend.crud.crud_tmpdocument import create_tmp_document, get_tmp_document_by_filename
 from core.backend.router.req_res_schema import DeleteDocument
 from core.backend.schema.schema import *
-from core.backend.utils.utils import get_current_user, get_db, get_document_tags, get_filtered_documents
+from core.backend.utils.utils import get_current_user, get_db, get_document_tags, get_filtered_documents, vector_paper_for_tmp
 from core.vectordb.chromadb import *
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
@@ -78,6 +79,60 @@ def get_document(documentID: str,knowledgeID:str,db: Session = Depends(get_db)):
     print("File_path",file_path) # 替换成你实际的 PDF 文件路径
     return FileResponse(file_path)
 
+## 多文件对话-文件上传 
+@router.post("/document/multi_file_chat_upload")
+async def  upload_document(request:Request,documentFile:UploadFile=File,db: Session = Depends(get_db)):
+    tmpPDFStoragePath =os.getenv("TMP_PAPER_SAVE_DIR")
+   # user =await get_current_user(token,db)
+
+        # 计算文件的MD5哈希值
+    hasher = hashlib.md5()
+    file_content = await documentFile.read()
+    hasher.update(file_content)
+    file_md5 = hasher.hexdigest()
+    print("FILE_MD5",file_md5)
+    #检查临时知识库中是否存在该文件
+    document =get_tmp_document_by_filename(db, file_md5)
+    if document:
+        #直接返回
+        return {
+            "status_code": 200,
+            "msg": "upload successfully",
+            "data": {
+                "documentID": uid,
+                "documentName": documentFile.filename,
+                "vectorNum": 0,
+                "createTime": int(createtime.timestamp())
+            }
+        }
+
+        
+    # 重置文件内容读取位置，以便后续写入文件
+    documentFile.file.seek(0)
+    print("saving ",documentFile.filename,"...")
+    file_path=os.path.join(tmpPDFStoragePath,documentFile.filename)
+    with open(file_path, "wb") as buffer:
+        buffer.write(documentFile.file.read())
+    uid=cal_file_md5(file_path)
+    
+    print("UID",uid)
+    # 向量化
+    vectornum=vector_paper_for_tmp(file_path,uid,"THIS_IS_A_TMP_KID",request.app.chroma_db)
+
+    createtime=datetime.datetime.now(timezone.utc)
+    document = TMPDocumentCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/tmppdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID="THIS_IS_A_TMP_KID",lid="THIS_IS_A_TMP_LID",createTime=createtime)
+
+    create_tmp_document(db=db, document=document)
+    return {
+        "status_code": 200,
+        "msg": "upload successfully",
+        "data": {
+            "documentID": uid,
+            "documentName": documentFile.filename,
+            "vectorNum": vectornum,
+            "createTime": int(createtime.timestamp())
+        }
+    }
 
 
 ## 单文件上传
@@ -112,6 +167,7 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
     with open(file_path, "wb") as buffer:
         buffer.write(documentFile.file.read())
     uid=cal_file_md5(file_path)
+
     print("UID",uid)
     createtime=datetime.datetime.now(timezone.utc)
     document = DocumentCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/pdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)

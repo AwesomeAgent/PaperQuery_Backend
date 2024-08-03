@@ -49,3 +49,21 @@ class Document(Base):
     documentDescription = Column(Text)  # 文本类型，可以存储较长的描述信息
     createTime = Column(TIMESTAMP, server_default=func.now())  # 增加的时间戳字段，默认当前时间
     createTime_timestamp = column_property(func.extract('epoch', createTime).cast(Integer))
+# 临时文件存储
+# 定义 Document 表
+class TMPDocument(Base):
+    __tablename__ = 'tmpdocuments'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    uid = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空
+    knowledgeID = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空
+    lid = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空
+    documentName = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空
+    documentPath = Column(String(255), nullable=False)  # 最多255个字符的变长字符串，不允许为空
+    documentStatus = Column(Integer)  # 整数类型，用于存储文件状态
+    documentVector = Column(Integer)  # 整数类型，用于存储文件向量
+    primaryClassification = Column(String(255))  # 最多255个字符的变长字符串，用于存储主分类
+    secondaryClassification = Column(String(255))  # 最多255个字符的变长字符串，用于存储次分类
+    tags = Column(String(255))  # 最多255个字符的变长字符串，用于存储标签
+    documentDescription = Column(Text)  # 文本类型，可以存储较长的描述信息
+    createTime = Column(TIMESTAMP, server_default=func.now())  # 增加的时间戳字段，默认当前时间
+    createTime_timestamp = column_property(func.extract('epoch', createTime).cast(Integer))
