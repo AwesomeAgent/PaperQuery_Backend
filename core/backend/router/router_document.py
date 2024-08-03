@@ -84,7 +84,7 @@ def get_document(documentID: str,knowledgeID:str,db: Session = Depends(get_db)):
 async def  upload_document(request:Request,documentFile:UploadFile=File,db: Session = Depends(get_db)):
     tmpPDFStoragePath =os.getenv("TMP_PAPER_SAVE_DIR")
    # user =await get_current_user(token,db)
-
+    createtime=datetime.datetime.now(timezone.utc)
         # 计算文件的MD5哈希值
     hasher = hashlib.md5()
     file_content = await documentFile.read()
@@ -99,8 +99,8 @@ async def  upload_document(request:Request,documentFile:UploadFile=File,db: Sess
             "status_code": 200,
             "msg": "upload successfully",
             "data": {
-                "documentID": uid,
-                "documentName": documentFile.filename,
+                "documentID": document.uid,
+                "documentName": document.documentName,
                 "vectorNum": 0,
                 "createTime": int(createtime.timestamp())
             }

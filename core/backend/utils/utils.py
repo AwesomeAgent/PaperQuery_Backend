@@ -160,6 +160,8 @@ def format_uids_to_json(uid_list):
         formatted_data= {"documentID": {
             "$eq": uid_list[0]
         }}
+    elif len(uid_list) == 0:
+        formatted_data = {}
     else:
         formatted_data = {
             "$or": [

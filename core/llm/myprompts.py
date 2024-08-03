@@ -185,8 +185,12 @@ Your output should be in standard JSON format
 {{
     "is_relevant": bool,
     "is_professional": bool,
-    "arxiv_query_keyword":["keyword1","keyword2"]
+    "arxiv_query_keyword":["keyword1" ...]
 }}
+1. is_relevant refers to whether the student's question is related to the content of the paper,
+2. is_professional refers to whether the student's question is a professional question,
+3. arxiv_query_keyword, when is_relevant=False, is_professional=True, you need to fill in the fields, you need to ignore all the content of the paper, and only extract keywords according to the user's question, that is, the student's question can search for the paper with what keywords to solve the puzzle. Your keyword extraction must be relevant enough and don't expand too much.
+
 >>>
 If you have understood your task, let's begin
 <<<

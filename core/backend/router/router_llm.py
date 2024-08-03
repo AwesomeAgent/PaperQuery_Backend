@@ -84,8 +84,6 @@ def chat_with_paper_generate(chat:TMP_Chat_Request , request:Request):#token: st
     translator_rev = Translator(from_lang="en", to_lang="zh",secret_id="AKIDdA0xAOMfptoks0ERZk3WxIiDoP0cFqU5",secret_key="jcPB0mo6NofWI5EEHUycWgsz34xpeWTU")
     translatedinput =translator.translate(re.sub(r'[\n\r\t]', '', chat.question))
     #将用户的问题作为RAG进行检索
-    print(chat.uid)
-    print(format_uids_to_json(chat.uid))
     docs=request.app.chroma_db.query_paper_with_score_layer1_by_filter(translatedinput,format_uids_to_json(chat.uid))
     
     print(docs)
@@ -113,7 +111,7 @@ def chat_with_paper_generate(chat:TMP_Chat_Request , request:Request):#token: st
         yield f"data: {json.dumps(js_data,ensure_ascii=False)}\n\n"
         count=1
         for paper in results:
-            datalist=f"**{count}**.<u> [{translator_rev.translate(paper.get(PARAMS.TITLE, 'N/A'))}]({paper.get(PARAMS.PDF_URL, 'N/A')})</u> <br><br>"
+            datalist=f"**{count}**. [{translator_rev.translate(paper.get(PARAMS.TITLE, 'N/A'))}]({paper.get(PARAMS.PDF_URL, 'N/A')}) <br><br>"
             count+=1     
             for chunk in chunked_yield(datalist):
                 js_data = {"code": "200", "msg": "ok", "data": chunk}
