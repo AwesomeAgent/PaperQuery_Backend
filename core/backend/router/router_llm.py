@@ -43,6 +43,7 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
     #将用户的问题作为RAG进行检索
     docs=request.app.chroma_db.query_paper_with_score_layer1_by_filter(translatedinput,{"documentID":chat.ref.documentID})
     judge_result=request.app.chat_agent.chat_judge_relate(chat.context,chat.ref.selectedText,translatedinput,docs)
+    print(docs)
     ret=None
     results=None
     if( not judge_result["is_relevant"]) and (judge_result["is_professional"] and len(judge_result["arxiv_query_keyword"])>0):

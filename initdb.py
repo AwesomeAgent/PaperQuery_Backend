@@ -24,7 +24,7 @@ knowledgeID2=uuid.uuid1()
 knowledgeID3=uuid.uuid1()
 # 插入数据
 users_data = [
-    # ("admin", "123456", "admin"),
+    ("admin", "123456", "admin"),
     ("user", "123456","user"),
 ]
 
