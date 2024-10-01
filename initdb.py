@@ -42,29 +42,29 @@ cursor.execute('SELECT * FROM "users"')
 #     print(row)
 
 
-# # 删除表（如果存在）
-# cursor.execute('''
-# DROP TABLE IF EXISTS documents
-# ''')
+# 删除表（如果存在）
+cursor.execute('''
+DROP TABLE IF EXISTS documents
+''')
 
-# # 创建表，增加时间戳列
-# cursor.execute('''
-# CREATE TABLE IF NOT EXISTS documents (
-#     id INTEGER PRIMARY KEY AUTOINCREMENT,
-#     uid VARCHAR(255) NOT NULL,
-#     knowledgeID VARCHAR(255) NOT NULL,
-#     lid VARCHAR(255) NOT NULL,
-#     documentName VARCHAR(255) NOT NULL,
-#     documentPath VARCHAR(255) NOT NULL,
-#     documentStatus INTEGER,
-#     documentVector INTEGER,
-#     primaryClassification VARCHAR(255),
-#     secondaryClassification VARCHAR(255),
-#     tags VARCHAR(255),
-#     documentDescription TEXT,
-#     createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-# )
-# ''')
+# 创建表，增加时间戳列
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS documents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid VARCHAR(255) NOT NULL,
+    knowledgeID VARCHAR(255) NOT NULL,
+    lid VARCHAR(255) NOT NULL,
+    documentName VARCHAR(255) NOT NULL,
+    documentPath VARCHAR(255) NOT NULL,
+    documentStatus INTEGER,
+    documentVector INTEGER,
+    primaryClassification VARCHAR(255),
+    secondaryClassification VARCHAR(255),
+    tags VARCHAR(255),
+    documentDescription TEXT,
+    createTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+''')
 
 # # 查询数据并打印
 # cursor.execute('SELECT * FROM documents')
@@ -75,24 +75,24 @@ cursor.execute('SELECT * FROM "users"')
 
 
 
-# # 删除表（如果存在）
-# cursor.execute('''
-# DROP TABLE IF EXISTS knowledges
-# ''')
+# 删除表（如果存在）
+cursor.execute('''
+DROP TABLE IF EXISTS knowledges
+''')
 
-# # 创建表，并增加时间戳列
-# cursor.execute('''
-# CREATE TABLE IF NOT EXISTS knowledges (
-#     id INTEGER PRIMARY KEY AUTOINCREMENT,
-#     knowledgeID VARCHAR(255) NOT NULL,
-#     lid VARCHAR(255) NOT NULL,
-#     knowledgeName VARCHAR(255) NOT NULL,
-#     knowledgeDescription TEXT,
-#     documentNum INTEGER,
-#     vectorNum INTEGER,
-#     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-# )
-# ''')
+# 创建表，并增加时间戳列
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS knowledges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    knowledgeID VARCHAR(255) NOT NULL,
+    lid VARCHAR(255) NOT NULL,
+    knowledgeName VARCHAR(255) NOT NULL,
+    knowledgeDescription TEXT,
+    documentNum INTEGER,
+    vectorNum INTEGER,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+''')
 
 # # # 插入数据
 # # knowledges_data = [
