@@ -1,6 +1,7 @@
 import time
 
 import dotenv
+dotenv.load_dotenv()
 from colorama import Fore, Style
 from langchain_openai import OpenAIEmbeddings
 
