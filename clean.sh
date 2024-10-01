@@ -4,3 +4,4 @@ rm -rf res/layer2/*
 rm -rf res/pdf/*
 rm -rf res/tmppdf/*
 python initdb.py
+mkdir -p  res/pdf/
