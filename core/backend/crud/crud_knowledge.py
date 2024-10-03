@@ -22,6 +22,7 @@ def get_knowledge_by_lid(db: Session, lid: str) :
 
 # 为用户增加新的`知识`
 def create_knowledge(db: Session, knowledge: KnowledgeCreate):
+    print(knowledge.__str__)
     db_knowledge = Knowledge(**knowledge.model_dump())
     db.add(db_knowledge)
     db.commit()

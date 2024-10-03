@@ -23,6 +23,7 @@ from core.backend.router import (
     router_llm,
     router_translate,
     router_user,
+    router_note
 )
 from core.backend.schema.schema import *
 from core.llm.LLM import LLM
@@ -55,7 +56,7 @@ app.include_router(router_knowledge.router, tags=["knowledge"])
 app.include_router(router_document.router, tags=["router_document"])
 app.include_router(router_llm.router, tags=["router_llm"])
 app.include_router(router_translate.router, tags=["router_translate"])
-
+app.include_router(router_note.router, tags=["router_note"])
 
 
 if __name__ == "__main__":

@@ -67,3 +67,13 @@ class TMPDocument(Base):
     documentDescription = Column(Text)  # 文本类型，可以存储较长的描述信息
     createTime = Column(TIMESTAMP, server_default=func.now())  # 增加的时间戳字段，默认当前时间
     createTime_timestamp = column_property(func.extract('epoch', createTime).cast(Integer))
+
+
+class Note(Base):
+    __tablename__ = 'notes'
+    # 表字段映射
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    lid = Column(String(255), nullable=False)
+    knowledgeID = Column(String(255), nullable=False)
+    uid = Column(String(255), nullable=False)
+    note = Column(Text)

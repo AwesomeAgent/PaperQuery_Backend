@@ -11,8 +11,10 @@ from core.agent.chatAgent import *
 from core.agent.dataprocessAgent import *
 from core.backend.crud.crud_document import *
 from core.backend.crud.crud_knowledge import update_knowledge_content
+from core.backend.crud.crud_note import create_note, del_note
 from core.backend.crud.crud_tmpdocument import create_tmp_document, get_tmp_document_by_filename
 from core.backend.router.req_res_schema import DeleteDocument
+from core.backend.schema.noteschema import NoteCreate, NoteDelete
 from core.backend.schema.schema import *
 from core.backend.utils.utils import get_current_user, get_db, get_document_tags, get_filtered_documents, vector_paper_for_tmp
 from core.vectordb.chromadb import *
@@ -171,7 +173,12 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
     print("UID",uid)
     createtime=datetime.datetime.now(timezone.utc)
     document = DocumentCreate(documentName=documentFile.filename,documentPath=os.path.join("/res/pdf/",documentFile.filename),documentStatus=0,uid=uid,knowledgeID=knowledgeID,lid=user.lid,createTime=createtime)
-
+    ### 增加创建笔记
+    addnotedata=NoteCreate(
+        uid=uid,knowledgeID=knowledgeID,lid=user.lid,
+    )
+    create_note(db=db,info=addnotedata)
+    ###
     create_document(db=db, document=document)
     return {
         "status_code": 200,
@@ -190,7 +197,7 @@ async def  upload_document(knowledgeID:str=Form(),documentFile:UploadFile=File, 
 ## 文件删除
 @router.post("/document/delete")
 async def delete_document(deleteDocument:DeleteDocument,request:Request,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
-
+    user =await get_current_user(token,db)
     document =get_document_by_uid_kid(db, deleteDocument.documentID,deleteDocument.knowledgeID)
     if not document:
         return {
@@ -205,6 +212,12 @@ async def delete_document(deleteDocument:DeleteDocument,request:Request,token: s
     request.app.chroma_db.delete_paper_from_layer2(deleteDocument.knowledgeID,deleteDocument.documentID)
     #更新知识库状态 file -1  vector -N
     update_knowledge_content(db,-document.documentVector,-1,document.knowledgeID)
+    ### 增加删除笔记
+    delnotedata=NoteDelete(
+        uid=deleteDocument.documentID,knowledgeID=deleteDocument.knowledgeID,lid=user.lid,
+    )
+    del_note(db=db,delNote=delnotedata)
+    ###
     #删除文件
     doc =get_document_by_uid(db, deleteDocument.documentID)#检查其他知识中是否还有该文档,如果有就不需要删除向量和源文件
     if not doc: #如果没有则进行删除
