@@ -15,6 +15,10 @@ def cal_file_md5(file_path):
             md5.update(data)
     return md5.hexdigest()
 def check_and_parse_json(input_str):
+    if input_str.strip().startswith("```json") and input_str.strip().endswith("```"):
+        # 去除句首的 ```json 和句尾的 ```
+        input_str = input_str.replace("```json", "").replace("```", "").strip()  # 去掉前面的 ` ```json` (7个字符) 和后面的 ` ``` ` (3个字符)
+    # print(input_str)
     try:
         # 加载 JSON 数据
         data = json.loads(input_str)

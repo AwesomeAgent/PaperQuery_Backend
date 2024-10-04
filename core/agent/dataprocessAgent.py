@@ -99,7 +99,9 @@ class DataProcessAgent:
         while retries < max_retries:
             try:
                 response = self.llm.chat_with_llm(call_prompt)
-                if check_and_parse_json(response.content)!=None:
+                # print("-----------------------")
+                # print(response)
+                if check_and_parse_json(response)!=None:
                     break
                 print(response)
             except Exception:
@@ -108,7 +110,7 @@ class DataProcessAgent:
                     print("Max retries reached. Exiting...")
                     return None
                 print(f"Retrying... (Attempt {retries})")
-        return check_and_parse_json(response.content)
+        return check_and_parse_json(response)
     
 
 
