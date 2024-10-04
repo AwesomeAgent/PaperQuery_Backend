@@ -23,7 +23,8 @@ from core.backend.router import (
     router_llm,
     router_translate,
     router_user,
-    router_note
+    router_note,
+    router_post
 )
 from core.backend.schema.schema import *
 from core.llm.LLM import LLM
@@ -57,7 +58,7 @@ app.include_router(router_document.router, tags=["router_document"])
 app.include_router(router_llm.router, tags=["router_llm"])
 app.include_router(router_translate.router, tags=["router_translate"])
 app.include_router(router_note.router, tags=["router_note"])
-
+app.include_router(router_post.router,tags=["router_post"])
 
 if __name__ == "__main__":
     import uvicorn
