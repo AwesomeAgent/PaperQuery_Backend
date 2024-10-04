@@ -93,7 +93,21 @@ CREATE TABLE IF NOT EXISTS knowledges (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 ''')
+# 删除表（如果存在）
+cursor.execute('''
+DROP TABLE IF EXISTS notes
+''')
 
+# 创建表，并增加时间戳列
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    lid VARCHAR(255) NOT NULL,
+    knowledgeID VARCHAR(255) NOT NULL,
+    uid VARCHAR(255) NOT NULL,
+    note TEXT
+)
+''')
 # # # 插入数据
 # # knowledges_data = [
 # #     (f"kid{i+1}", "admin", f"Knowledge {i+1}", f"Description of Knowledge {i+1}", i+1, (i+1) * 100, datetime.now(timezone.utc))
