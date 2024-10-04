@@ -24,7 +24,8 @@ from core.backend.router import (
     router_translate,
     router_user,
     router_note,
-    router_post
+    router_post,
+    router_commit
 )
 from core.backend.schema.schema import *
 from core.llm.LLM import LLM
@@ -59,7 +60,7 @@ app.include_router(router_llm.router, tags=["router_llm"])
 app.include_router(router_translate.router, tags=["router_translate"])
 app.include_router(router_note.router, tags=["router_note"])
 app.include_router(router_post.router,tags=["router_post"])
-
+app.include_router(router_commit.router,tags=["router_commit"])
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

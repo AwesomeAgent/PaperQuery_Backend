@@ -14,7 +14,6 @@ class PostResponse(BaseModel):
     updatetime_timestamp:int
 
     class Config:
-        orm_mode = True  # 使用orm_mode，支持将SQLAlchemy模型转为Pydantic模型
         from_attributes=True
 class PostCreate(BaseModel):
     lid:str
