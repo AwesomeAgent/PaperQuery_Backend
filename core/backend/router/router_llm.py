@@ -43,7 +43,6 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
     #将用户的问题作为RAG进行检索
     docs=request.app.chroma_db.query_paper_with_score_layer1_by_filter(translatedinput,{"documentID":chat.ref.documentID})
     judge_result=request.app.chat_agent.chat_judge_relate(chat.context,chat.ref.selectedText,translatedinput,docs)
-    print(docs)
     ret=None
     results=None
     if( not judge_result["is_relevant"]) and (judge_result["is_professional"] and len(judge_result["arxiv_query_keyword"])>0):
@@ -52,12 +51,14 @@ def chat_with_paper_generate(chat:Chat_Request , request:Request,token: str = De
         results = client.fetch_results(judge_result["arxiv_query_keyword"], fetch_params)
 
     else:
+        print("-------------------------")
+        print(chat.context,translatedinput,docs)
         ret=request.app.chat_agent.chat_with_memory_ret_tmp(chat.context,translatedinput,docs)
     def predict():
         text = ""
 
         for _token in ret:
-            token = _token.content
+            token = _token.get_result()
             js_data = {"code": "200", "msg": "ok", "data": token}
             yield f"data: {json.dumps(js_data,ensure_ascii=False)}\n\n"
             text += token
@@ -102,7 +103,7 @@ def chat_with_paper_generate(chat:TMP_Chat_Request , request:Request):#token: st
         text = ""
 
         for _token in ret:
-            token = _token.content
+            token = _token.get_result()
             js_data = {"code": "200", "msg": "ok", "data": token}
             yield f"data: {json.dumps(js_data,ensure_ascii=False)}\n\n"
             text += token

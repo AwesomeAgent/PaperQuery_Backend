@@ -1,5 +1,6 @@
 import erniebot
 import json
+import time
 
 from core.backend.utils.utils import clean_markdown_json_blocks
 from core.llm.myprompts import *
@@ -22,13 +23,26 @@ class ChatAgent:
             question=question,
             paper_content=paper_content
         )
+        print("-----------------0--------")
+        print(prompt)
         max_retries = 5
         retries = 0
-        jsondata = None
+        jsondata = None 
         while retries < max_retries:
             try:
                 # 文心大模型调用
-                response = self.llm.chat_with_llm(prompt)
+                print("---------------1---------")
+                time.sleep(3)
+                print(jsondata)
+                messages = [{'role': 'user', 'content': prompt}]
+                print(self.llm.api_type)
+                response = self.llm.ChatCompletion.create(
+                    model='ernie-3.5',  # 文心大模型的版本
+                    messages=messages
+                )
+                print("---------------3---------")
+                print(jsondata)
+
                 filter_response = clean_markdown_json_blocks(response.get_result())
                 jsondata = json.loads(filter_response)
                 break
@@ -62,7 +76,7 @@ class ChatAgent:
     # 临时文件流式对话
     def chat_with_memory_ret_tmp(self, conversation_memory, question, paper_content):
         prompt = CHAT_WITH_MEMORY_PAPER_ASSISITANT_TMP.format(
-            context=conversation_memory,
+            conversation_memory=conversation_memory,
             question=question,
             paper_content=paper_content
         )
@@ -75,6 +89,7 @@ class ChatAgent:
             }], 
             stream=True
         )
+
         return response
 
     def chat_summarise(self, context, question, answer):

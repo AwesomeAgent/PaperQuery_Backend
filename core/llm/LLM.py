@@ -51,3 +51,7 @@ class LLM:
                 print(f"Retrying... (Attempt {retries})")
 
 
+if __name__ == '__main__':
+     llm = LLM()
+     answer = llm.chat_with_llm("你是谁")
+     print(answer)

@@ -43,10 +43,12 @@ def test_chat_with_memory_ret():
 # 运行测试
 if __name__ == '__main__':
     response = test_chat_with_memory_ret()
-    for i in response:
-        print(i)
-    answer = ""
-    for r in response:
-        answer += r["result"]
+    # print(response.get_result())
+    for _token in response:
+        token = _token.get_result()
+        print(token)
+    # answer = ""
+    # for r in response:
+    #     answer += r["result"]
 
-    print(answer)  
+    # print(answer)  
