@@ -1,8 +1,9 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter,Depends,BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from core.backend.crud.crud_commit import create_commit, query_all_commits_by_pid
+from core.backend.crud.crud_post import query_post_by_pid
 from core.backend.router.dependencies import get_db
 from core.backend.router.router_user import get_current_user
 from core.backend.schema.commitschema import CommitCreate, CommitCreateRequest, QueryCommitResponse
@@ -10,10 +11,24 @@ from core.backend.schema.commitschema import CommitCreate, CommitCreateRequest, 
 oauth2_schema=OAuth2PasswordBearer(tokenUrl="/login")
 router=APIRouter()
 
-
+def post_answer_gpt(db:Session,postid:str, request:Request):
+    ## 帖子内容获取
+    post=query_post_by_pid(db,postid)
+    createtime=datetime.now(timezone.utc)
+    ## 调用大模型
+    callresponse=request.app.chat_agent.chat_answer_post(post.title,post.content)
+    commitdata=CommitCreate(
+        lid="文言一心",
+        postid=postid,
+        username="文言一心小助手",
+        content=callresponse,
+        publishtime=int(createtime.timestamp())
+    )
+    ## 生成内容存储
+    create_commit(db,commitdata)
 #创建评论
 @router.post("/forum/createcommit")
-async def create_commit_handler(commitCreateRequest:CommitCreateRequest,token:str=Depends(oauth2_schema),db:Session=Depends(get_db)):
+async def create_commit_handler(background_tasks: BackgroundTasks, request:Request,commitCreateRequest:CommitCreateRequest,token:str=Depends(oauth2_schema),db:Session=Depends(get_db),):
     #获取当前用户
     user =await get_current_user(token,db)
     createtime=datetime.now(timezone.utc)
@@ -25,6 +40,11 @@ async def create_commit_handler(commitCreateRequest:CommitCreateRequest,token:st
         publishtime=int(createtime.timestamp())
     )
     create_commit(db,commitdata)
+    #### 检查是否有关键字 `@文言一心 `
+    if("@文言一心" in commitCreateRequest.content):
+        print("检测到文言一心")
+        background_tasks.add_task(post_answer_gpt,db,commitCreateRequest.postid,request)
+    
     return{
             "status_code": 200, 
             "msg":"create commit suscessfully."

@@ -34,6 +34,23 @@ class ChatAgent:
         jsondata=json.loads(response.content)
         print(jsondata)
         return jsondata["answer"],jsondata["conversation_memory"]
+# 论坛助手
+    def chat_answer_post(self,postTitle,postContent):
+        prompt=POST_ANSWER.format(posttitle=postTitle,postcontent=postContent)
+        max_retries = 5
+        retries = 0
+        while retries < max_retries:
+            try:
+                response = self.llm.invoke(prompt)
+                break
+            except Exception:
+                retries += 1
+                if retries == max_retries:
+                    print("Max retries reached. Exiting...")
+                    return None
+                print(f"Retrying... (Attempt {retries})")
+        print(response.content)
+        return response.content
 
     #判断关联性
     def chat_judge_relate(self, conversation_memory,ref,question,paper_content):
@@ -69,7 +86,6 @@ class ChatAgent:
         return response.content
 
     def chat_simple(self,prompt):
-
         return self.streamllm.stream(prompt)
     def get_llm(self):
         return self.llm

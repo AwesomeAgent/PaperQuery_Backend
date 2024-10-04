@@ -27,3 +27,8 @@ def update_post(db:Session,postUpdate:PostUpdate):
     db.query(Post).filter(
         Post.postid==postUpdate.postid
     ).update(update_data)
+
+#根据postid获取帖子
+
+def query_post_by_pid(db:Session,pid:str):
+    return db.query(Post).filter(Post.postid==pid).first()
