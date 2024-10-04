@@ -5,3 +5,4 @@ res/test/*
 core/tmp
 */*test*
 res/pdf/
+res/layer*
