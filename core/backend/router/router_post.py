@@ -16,7 +16,7 @@ router=APIRouter()
 async def create_user_post(postCreateRequest:PostCreateRequest,token:str=Depends(oauth2_schema),db:Session=Depends(get_db)):
     #获取当前用户
     user =await get_current_user(token,db)
-    createtime=datetime.d
+    createtime=datetime.now(timezone.utc)
     postdata=PostCreate(
         lid=user.lid,
         postid=str(uuid.uuid1()),
