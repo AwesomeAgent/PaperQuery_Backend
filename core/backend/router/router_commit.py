@@ -55,9 +55,19 @@ async def create_commit_handler(background_tasks: BackgroundTasks, request:Reque
 async def get_post_commit_handler(postid:str,token:str=Depends(oauth2_schema),db:Session=Depends(get_db)):
     
     commits=query_all_commits_by_pid(db,postid)
+    post=query_post_by_pid(db,postid)
     commitsData=[QueryCommitResponse.model_validate(commit) for commit in commits]
     return {
             "status_code": 200, 
             "msg":"get commit suscessfully.",
-            "data":commitsData
+            "data":{
+            "postid":post.postid,
+            "content": post.content,
+            "updatetime_timestamp":post.updatetime_timestamp,
+            "lid": post.lid,
+            "username":post.username,
+            "title": post.title,
+            "publishtime_timestamp":post.publishtime_timestamp,
+            "commits":commitsData
+            }
         }
