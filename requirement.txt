@@ -10,6 +10,7 @@ attrs==23.2.0
 autoflake==2.3.1
 awadb==0.3.13
 backoff==2.2.1
+bce-python-sdk==0.9.23
 bcrypt==4.1.3
 build==1.2.1
 cachetools==5.4.0
@@ -22,6 +23,7 @@ ci-info==0.3.0
 click==8.1.7
 colorama==0.4.6
 coloredlogs==15.0.1
+colorlog==6.8.2
 comm==0.2.2
 configobj==5.0.8
 configparser==7.1.0
@@ -34,6 +36,7 @@ Deprecated==1.2.14
 distro==1.9.0
 dnspython==2.6.1
 email_validator==2.2.0
+erniebot==0.5.9
 etelemetry==0.3.1
 exceptiongroup==1.2.0
 executing==2.0.1
@@ -44,6 +47,7 @@ filelock==3.15.4
 flatbuffers==24.3.25
 frozenlist==1.4.1
 fsspec==2024.6.1
+future==1.0.0
 google-auth==2.32.0
 googleapis-common-protos==1.63.2
 greenlet==3.0.3
@@ -66,6 +70,8 @@ jedi==0.19.1
 Jinja2==3.1.4
 jsonpatch==1.33
 jsonpointer==3.0.0
+jsonschema==4.23.0
+jsonschema-specifications==2023.12.1
 jupyter_client==8.6.2
 jupyter_core==5.7.2
 kubernetes==30.1.0
@@ -126,6 +132,7 @@ pure-eval==0.2.2
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pycparser==2.22
+pycryptodome==3.20.0
 pydantic==2.8.2
 pydantic_core==2.20.1
 pydot==3.0.1
@@ -146,10 +153,12 @@ pyxnat==1.6.2
 PyYAML==6.0.1
 pyzmq==25.1.2
 rdflib==6.3.2
+referencing==0.35.1
 regex==2024.5.15
 requests==2.32.3
 requests-oauthlib==2.0.0
 rich==13.7.1
+rpds-py==0.20.0
 rsa==4.9
 scipy==1.14.1
 setuptools==69.5.1
