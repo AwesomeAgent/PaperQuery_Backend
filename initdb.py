@@ -108,6 +108,43 @@ CREATE TABLE IF NOT EXISTS notes (
     note TEXT
 )
 ''')
+
+# 删除表（如果存在）
+cursor.execute('''
+DROP TABLE IF EXISTS posts
+''')
+
+# 创建表，并增加时间戳列
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    lid VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    postid VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT,
+    publishtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatetime  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+''')
+
+# 删除表（如果存在）
+cursor.execute('''
+DROP TABLE IF EXISTS commits
+''')
+
+# 创建表，并增加时间戳列
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS commits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    lid VARCHAR(255) NOT NULL,
+    postid VARCHAR(255) NOT NULL,
+    commitid VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    content TEXT,
+    publishtime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+''')
 # # # 插入数据
 # # knowledges_data = [
 # #     (f"kid{i+1}", "admin", f"Knowledge {i+1}", f"Description of Knowledge {i+1}", i+1, (i+1) * 100, datetime.now(timezone.utc))

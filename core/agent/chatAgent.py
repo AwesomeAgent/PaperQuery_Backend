@@ -42,7 +42,6 @@ class ChatAgent:
                 )
                 print("---------------3---------")
                 print(jsondata)
-
                 filter_response = clean_markdown_json_blocks(response.get_result())
                 jsondata = json.loads(filter_response)
                 break
@@ -53,6 +52,28 @@ class ChatAgent:
                     return None
                 print(f"Retrying... (Attempt {retries})")
         return jsondata
+
+# 论坛助手
+    def chat_answer_post(self,postTitle,postContent):
+        prompt=POST_ANSWER.format(posttitle=postTitle,postcontent=postContent)
+        max_retries = 5
+        retries = 0
+        while retries < max_retries:
+            try:
+                messages = [{'role': 'user', 'content': prompt}]
+                response = self.llm.ChatCompletion.create(
+                    model='ernie-3.5',  # 文心大模型的版本
+                    messages=messages
+                )
+                break
+            except Exception:
+                retries += 1
+                if retries == max_retries:
+                    print("Max retries reached. Exiting...")
+                    return None
+                print(f"Retrying... (Attempt {retries})")
+        print(response.get_result())
+        return response.get_result()
 
     # 流式对话
     def chat_with_memory_ret(self, conversation_memory, ref, question, paper_content):

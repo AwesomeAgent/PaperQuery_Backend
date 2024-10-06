@@ -77,3 +77,30 @@ class Note(Base):
     knowledgeID = Column(String(255), nullable=False)
     uid = Column(String(255), nullable=False)
     note = Column(Text)
+
+
+class Post(Base):
+    __tablename__ = 'posts'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    lid = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False)
+    postid = Column(String(255), nullable=False)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=True)
+    publishtime = Column(TIMESTAMP,nullable=True)
+    publishtime_timestamp = column_property(func.extract('epoch', publishtime).cast(Integer))
+    updatetime = Column(TIMESTAMP,nullable=True)
+    updatetime_timestamp = column_property(func.extract('epoch', updatetime).cast(Integer))
+
+class Commit(Base):
+    __tablename__ = 'commits'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    lid = Column(String(255), nullable=False)
+    postid = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False)
+    commitid=Column(String(255), nullable=False)
+    content = Column(Text, nullable=True)
+    publishtime = Column(TIMESTAMP, nullable=True)
+    publishtime_timestamp = column_property(func.extract('epoch', publishtime).cast(Integer))
