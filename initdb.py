@@ -25,7 +25,9 @@ knowledgeID3=uuid.uuid1()
 # 插入数据
 users_data = [
     ("admin", "123456", "admin"),
-    ("user", "123456","user"),
+    ("qwrdxer", "123456","user"),
+    ("hoyi","123456","user"),
+    ("CharXL","123456","user")
 ]
 
 for user in users_data:
