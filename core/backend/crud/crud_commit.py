@@ -10,6 +10,7 @@ def create_commit(db:Session,commitCreate:CommitCreate):
     lid=commitCreate.lid,
     postid=commitCreate.postid,
     username=commitCreate.username,
+    commitid=commitCreate.commitid,
     content=commitCreate.content,
     publishtime=commitCreate.publishtime,
     )

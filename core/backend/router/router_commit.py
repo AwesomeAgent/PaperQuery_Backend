@@ -7,7 +7,7 @@ from core.backend.crud.crud_post import query_post_by_pid
 from core.backend.router.dependencies import get_db
 from core.backend.router.router_user import get_current_user
 from core.backend.schema.commitschema import CommitCreate, CommitCreateRequest, QueryCommitResponse
-
+import uuid
 oauth2_schema=OAuth2PasswordBearer(tokenUrl="/login")
 router=APIRouter()
 
@@ -18,9 +18,10 @@ def post_answer_gpt(db:Session,postid:str, request:Request):
     ## 调用大模型
     callresponse=request.app.chat_agent.chat_answer_post(post.title,post.content)
     commitdata=CommitCreate(
-        lid="文言一心",
+        lid="文心一言",
         postid=postid,
-        username="文言一心小助手",
+        commitid=str(uuid.uuid1()),
+        username="文心一言小助手",
         content=callresponse,
         publishtime=int(createtime.timestamp())
     )
@@ -36,13 +37,14 @@ async def create_commit_handler(background_tasks: BackgroundTasks, request:Reque
         lid=user.lid,
         postid=commitCreateRequest.postid,
         username=user.username,
+        commitid=str(uuid.uuid1()),
         content=commitCreateRequest.content,
         publishtime=int(createtime.timestamp())
     )
     create_commit(db,commitdata)
     #### 检查是否有关键字 `@文言一心 `
-    if("@文言一心" in commitCreateRequest.content):
-        print("检测到文言一心")
+    if("@文心一言" in commitCreateRequest.content):
+        print("检测到文心一言")
         background_tasks.add_task(post_answer_gpt,db,commitCreateRequest.postid,request)
     
     return{

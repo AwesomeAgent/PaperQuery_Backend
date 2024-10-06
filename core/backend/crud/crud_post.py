@@ -19,7 +19,7 @@ def create_post(db:Session,postCreate:PostCreate):
     return new_post
 #获取全部帖子
 def get_all_posts(db:Session):
-    return db.query(Post).all()
+    return db.query(Post).order_by(Post.publishtime_timestamp.desc()).all()
 
 #更新帖子
 def update_post(db:Session,postUpdate:PostUpdate):
