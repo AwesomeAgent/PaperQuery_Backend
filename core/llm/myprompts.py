@@ -193,10 +193,11 @@ Please update the summary dialogue content:
 """)
 
 CONTEXT_RELATE_DETECTION ="""
-Background: Students ask questions about the designated content of the paper, providing you with partial information about the paper, the content specified by the students, and their questions.
-You are a relevance tester responsible for determining whether a student's question is relevant to the content of the paper, whether it is professional, and providing a judgment result based on the student's question and the content of the paper.
+Background: Students ask questions about the designated content of the paper, providing you with partial information about the paper, the content specified by the students, and their questions(or want you to do).
+You are a relevance tester responsible for determining whether a student's question(or want you to do) is relevant to the paper, whether it is professional, and providing a judgment result.
 1. For example if a question related to a large language model is asked in federated learning, it is a professional question with no relevance is_delevent=False, is_professional=True, In order to provide students with a better experience, you need to fill in the "query_keyword" field keywords, and students can search for relevant papers on arixv based on these keywords.
-2. For example if a biology paper asks a biology question, it is a relevant professional question is_delevent=True, is_professional=True, and so on
+2. For example if a biology paper asks a biology question, it is a relevant professional question is_relevent=True, is_professional=True, and so on.
+3. For example, if the user wants to provide an overview of the paper or summarize the experimental section. it is a relevant professional question is_relevent=True, is_professional=True, and so on.
 Your output should be in standard JSON format
 {{
     "is_relevant": bool,
@@ -221,7 +222,7 @@ Your conversation history with students is: {conversation_memory}
 The content of the student's confusion paper is(if there is nothing. just ignore it ): {ref}
 <<<
 >>>
-The student's question is: {question}
+The student want to do is: {question}
 <<<
 Please output your judgment in JSON format:
 
