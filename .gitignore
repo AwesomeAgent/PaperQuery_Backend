@@ -7,4 +7,5 @@ core/tmp
 res/pdf/
 res/layer1/*
 res/layer2/*
-res/
+res/tmppdf/*
+res/AcadeAgent/database.db
