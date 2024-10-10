@@ -7,3 +7,5 @@ core/tmp
 res/pdf/
 res/layer1/*
 res/layer2/*
+res/tmppdf/*
+res/AcadeAgent/*

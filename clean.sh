@@ -5,3 +5,4 @@ rm -rf res/pdf/*
 rm -rf res/tmppdf/*
 python initdb.py
 mkdir -p  res/pdf/
+mkdir -p  res/tmppdf/
