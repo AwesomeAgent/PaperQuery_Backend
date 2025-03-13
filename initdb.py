@@ -5,7 +5,8 @@ import dotenv
 import os
 dotenv.load_dotenv()
 # 创建数据库连接
-conn = sqlite3.connect(os.getenv("DB_PATH"))
+db_path = os.getenv("DB_PATH")
+conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
 
 # 创建表

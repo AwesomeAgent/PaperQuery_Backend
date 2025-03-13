@@ -39,7 +39,7 @@ Base.metadata.create_all(bind=engine)
 async def lifespan(app: FastAPI):
     app.llm=LLM()
     app.chroma_db=AcadeChroma(os.getenv("CHROMA_LAYER1_DIR"),os.getenv("CHROMA_LAYER2_DIR"),OpenAIEmbeddings(),app.llm)
-    app.chat_agent=ChatAgent(app.llm.get_llm('openai'),ChatOpenAI(model="gpt-4o-mini",streaming=True,openai_api_key="sk-WMwF3ZICC7ebCTTyC57c38Ff2b4246Ce8108A6DcF8B045C7",openai_api_base="https://api.gpt.ge/v1/",default_headers = {"x-foo": "true"}),app.chroma_db)
+    app.chat_agent=ChatAgent(app.llm.get_llm('openai'),ChatOpenAI(model="gpt-4o-mini",streaming=True,openai_api_key=os.getenv("OPENAI_API_KEY"),openai_api_base=os.getenv("OPENAI_API_BASE"),default_headers = {"x-foo": "true"}),app.chroma_db)
     yield
     # Clean up the ML models and release resources
     print("shoutdown!")
