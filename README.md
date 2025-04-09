@@ -55,3 +55,17 @@ DB_PATH="/home/PaperQuery_Backend/res/AcadeAgent/database.db"
 #项目位置
 AcadeAgent_DIR="/home/PaperQuery_Backend"
 ```
+
+安装包
+```
+pip install -r requirement
+```
+
+开启两个终端分别运行
+```
+## 启动后端api服务
+python main.py
+
+## 运行向量化服务
+python vector.py
+```
