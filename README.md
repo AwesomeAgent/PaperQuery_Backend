@@ -19,7 +19,7 @@ https://www.bilibili.com/video/BV1fH23YnE3w/
 标签。 上传完成后， 用户可以在本系统中阅读论文， 系统提供翻译和智能问答功能， 用户的
 问题可以随时发送给大模型，结合 RAG 技术，大模型可以给出准确的回答。
 使用 Langchain、chroma 实现 Agent 部分,拥有记忆、RAG、文档向量化处理功能
-
+ 
 ### 技术栈
 - fastapi
 - langchain
